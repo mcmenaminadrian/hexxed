@@ -24,8 +24,8 @@ class HexDisplay {
 		def position = fileChannel.position()
 		if (displayEngine.useBlock) {
 			def decBlock = (position / displayEngine.blockSize) as Integer
-			def blockCnt = Integer.toHexString(decBlock)
-			def offCnt = Long.toHexString(position % displayEngine.blockSize)
+			def blockCnt = String.format("%08X", decBlock)
+			def offCnt = String.format("%04X", position % displayEngine.blockSize)
 			lineOut = "$blockCnt:$offCnt\t"
 		} else
 			lineOut = Integer.toString(position, 16)	
