@@ -29,11 +29,18 @@ class HexFileHandler {
 			println "Unable to open file $fileName, exception $e"
 		}
 		
-	
+		def editFile = new HexWindow(640, 480)
 		def displayLines = new HexDisplay(displayEngine, fileChan)
-		for (i in 0 .. 16) {
-			displayLines.showLine()
-		}
+		def displayStr = ""
+		for (i in 1 .. 30) {
+		displayStr = displayStr + displayLines.showLine()}
+		editFile.editHex.setText(displayStr)
+		//editFile.redraw()
+	
+//		def displayLines = new HexDisplay(displayEngine, fileChan)
+	//	for (i in 0 .. 16) {
+		//	displayLines.showLine()
+		//}
 
 		fileChan.close()
 		randomFile.close()		

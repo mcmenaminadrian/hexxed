@@ -14,12 +14,12 @@ class HexDisplay {
 		fileChannel = channel
 	}
 	
-	void showLine()
+	String showLine()
 	{
-		showLine(true)
+		return showLine(true)
 	}
 	
-	void showLine(def advance)
+	String showLine(def advance)
 	{
 		def lineOut
 		def position = fileChannel.position()
@@ -72,7 +72,7 @@ class HexDisplay {
 		lineOut = lineOut + "\t"
 		(bytes.array()).eachByte(displayCharLine)
 		fileChannel.position(position + 0x10)
-		println lineOut
+		return lineOut + "\r"
 	}
 
 }
