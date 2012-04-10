@@ -6,6 +6,7 @@ class HexDisplay {
 	
 	def displayEngine
 	def fileChannel
+	def ALLOCATE = 0x10
 	
 	HexDisplay(def engine, def channel)
 	{
@@ -33,7 +34,8 @@ class HexDisplay {
 		def fString = "%0${byteCnt * 2}X"
 		def i = 0
 		BigInteger numb = 0
-		def displayLine = {
+		
+		def displayHexLine = {
 			Long x = 0x00000000000000FF & it
 			numb = numb * 256 + x
 			i++
@@ -45,9 +47,30 @@ class HexDisplay {
 			}
 		}
 		
-		def bytes = ByteBuffer.allocate(0x10)
+		char outChar ='\0'
+		i = 0
+		def displayCharLine = {
+			Long x = 0x00000000000000FF & it
+			outChar = outChar * 256 + it
+			if (byteCnt > 1) {
+				i++
+				if (i > 1) {
+					lineOut = lineOut + outChar
+					i = 0
+					outChar = '\0'
+				}
+			}
+			else {
+				lineOut = lineOut + outChar
+				outChar = '\0'
+			}
+		}
+		
+		def bytes = ByteBuffer.allocate(ALLOCATE)
 		fileChannel.read(bytes, position)
-		(bytes.array()).eachByte(displayLine)
+		(bytes.array()).eachByte(displayHexLine)
+		lineOut = lineOut + "\t"
+		(bytes.array()).eachByte(displayCharLine)
 		fileChannel.position(position + 0x10)
 		println lineOut
 	}
