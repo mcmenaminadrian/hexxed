@@ -50,7 +50,6 @@ class HexDisplay {
 		char outChar ='\0'
 		i = 0
 		def displayCharLine = {
-			Long x = 0x00000000000000FF & it
 			outChar = outChar * 256 + it
 			if (byteCnt > 1) {
 				i++

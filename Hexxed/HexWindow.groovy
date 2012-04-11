@@ -17,7 +17,7 @@ class HexWindow {
 	HexWindow(def x, def y, def handler) {
 	fileHandler = handler
 	def windowHex = new SwingBuilder()
-	def frameHex = windowHex.frame(title:'Hexxed', size:[x, y], show:true){
+	def frameHex = windowHex.frame(title:handler.fileName, size:[x, y], show:true){
 		editHex = editorPane(contentType: "text/plain")
 		menuHex = menuBar() {
 			menuFileHex = menu(text: "File", mnemonic: 'F') {

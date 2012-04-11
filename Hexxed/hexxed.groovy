@@ -2,7 +2,6 @@ package Hexxed
 
 import java.nio.channels.FileChannel
 
-
 class HexFileHandler {
 
 	def fileName
