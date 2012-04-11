@@ -71,7 +71,9 @@ class HexDisplay {
 		(bytes.array()).eachByte(displayHexLine)
 		lineOut = lineOut + "\t"
 		(bytes.array()).eachByte(displayCharLine)
-		fileChannel.position(position + 0x10)
+		if (advance) {
+			fileChannel.position(position + 0x10)
+		}
 		return lineOut + "\r"
 	}
 

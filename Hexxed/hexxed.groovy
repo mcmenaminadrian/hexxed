@@ -2,6 +2,7 @@ package Hexxed
 
 import java.nio.channels.FileChannel
 
+
 class HexFileHandler {
 
 	def fileName
@@ -11,6 +12,9 @@ class HexFileHandler {
 	def blockSize
 	def fileChan
 	def randomFile
+	def editFile
+	def displayLines
+	def open = false
 	
 	HexFileHandler(def le, def be, def bits, def offset,
 		def bSize, def blocks, def name)
@@ -24,26 +28,33 @@ class HexFileHandler {
 			randomFile = new RandomAccessFile(name, "rw") 
 			fileChan = randomFile.getChannel()
 			fileChan.position(fileOffset)
+			open = true
 		}
 		catch(e) {
 			println "Unable to open file $fileName, exception $e"
 		}
 		
-		def editFile = new HexWindow(640, 480)
-		def displayLines = new HexDisplay(displayEngine, fileChan)
-		def displayStr = ""
-		for (i in 1 .. 30) {
-		displayStr = displayStr + displayLines.showLine()}
-		editFile.editHex.setText(displayStr)
-		//editFile.redraw()
+		editFile = new HexWindow(640, 480, this)
+		displayLines = new HexDisplay(displayEngine, fileChan)
+		showLines()
+	}
 	
-//		def displayLines = new HexDisplay(displayEngine, fileChan)
-	//	for (i in 0 .. 16) {
-		//	displayLines.showLine()
-		//}
-
-		fileChan.close()
-		randomFile.close()		
+	void finalize()
+	{
+		super.finalize()
+		if (open) {
+			fileChan.close()
+			randomFile.close()
+		}
+	}
+	
+	void showLines()
+	{		
+		def displayStr = ''
+		for (i in 1 .. 30) {
+			displayStr = displayStr + displayLines.showLine()
+		}
+		editFile.editHex.setText(displayStr)
 	}
 	
 }
