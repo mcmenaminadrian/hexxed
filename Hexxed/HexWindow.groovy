@@ -11,19 +11,26 @@ class HexWindow {
 	def menuBarHex
 	def menuFileHex
 	def fileHandler
+	def fileLoader
 	def menuNavigateHex
 	def menuNavigateForward
+	def frameHex
+	def windowHex
 	
-	HexWindow(def x, def y, def handler) {
-	fileHandler = handler
-	def windowHex = new SwingBuilder()
-	def frameHex = windowHex.frame(title:handler.fileName, size:[x, y], show:true){
-		editHex = editorPane(contentType: "text/plain")
-		menuHex = menuBar() {
-			menuFileHex = menu(text: "File", mnemonic: 'F') {
-				menuItem(text: "Exit", mnemonic: 'x',
-					actionPerformed: {dispose()})
-			}
+	HexWindow(def x, def y, def handler) 
+	{
+		fileHandler = handler
+		windowHex = new SwingBuilder()
+		frameHex = windowHex.frame(title:handler.fileName, size:[x, y],
+			show:true){
+			editHex = editorPane(contentType: "text/plain")
+			menuHex = menuBar() {
+				menuFileHex = menu(text: "File", mnemonic: 'F') {
+					menuItem(text: "Exit", mnemonic: 'x',
+						actionPerformed: {dispose()})
+					menuItem(text: "Load", mnemonic: 'L',
+						actionPerformed: {loadFile()})
+				}
 			menuNavigateHex = menu(text: "Navigate", mnemonic: 'N') {
 				menuNavigateForward = menuItem(text: "Forward", 
 					mnemonic: 'r', actionPerformed: {fileHandler.showLines()})
@@ -35,5 +42,13 @@ class HexWindow {
 
 	}
 	
-	
+	void loadFile()
+	{
+		def swingLoadFile = new SwingBuilder()
+		def loadDialog = swingLoadFile.fileChooser(
+			dialogTitle: "Choose a file to open"
+		)
+		loadDialog.showOpenDialog()
+		fileHandler.setNewFile(loadDialog.getSelectedFile())
+	}
 }

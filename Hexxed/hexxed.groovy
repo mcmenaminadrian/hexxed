@@ -22,20 +22,9 @@ class HexFileHandler {
 		fileName = name
 		fileOffset = offset
 		blockSize = bSize
-		
-		try {
-			randomFile = new RandomAccessFile(name, "rw") 
-			fileChan = randomFile.getChannel()
-			fileChan.position(fileOffset)
-			open = true
-		}
-		catch(e) {
-			println "Unable to open file $fileName, exception $e"
-		}
-		
+
 		editFile = new HexWindow(640, 480, this)
-		displayLines = new HexDisplay(displayEngine, fileChan)
-		showLines()
+		setNewFile(name)
 	}
 	
 	void finalize()
@@ -44,6 +33,7 @@ class HexFileHandler {
 		if (open) {
 			fileChan.close()
 			randomFile.close()
+			open = false
 		}
 	}
 	
@@ -56,10 +46,34 @@ class HexFileHandler {
 		editFile.editHex.setText(displayStr)
 	}
 	
+	void setNewFile(def fileInName)
+	{
+		if (open) {
+			fileChan.close()
+			randomFile.close()
+			open = false
+		}
+		if (fileInName) {
+			try {
+				randomFile = new RandomAccessFile(fileInName, "rw")
+				fileChan = randomFile.getChannel()
+				fileChan.position(fileOffset)
+				open = true
+				displayLines = new HexDisplay(displayEngine, fileChan)
+				showLines()
+			}
+			catch(e) {
+				println "Unable to open file $fileInName, exception $e"
+			}
+		}
+		fileName = fileInName
+		editFile.frameHex.title = fileName
+	}
+	
 }
 
 def hexCli = new CliBuilder
-	(usage: 'hexxed [options] <file to edit>')
+	(usage: 'hexxed [options]')
 	
 	hexCli.o(longOpt: 'offset', args: 1,
 		'offset in file - default 0')
@@ -74,9 +88,10 @@ def hexCli = new CliBuilder
 	hexCli.be(longOpt: 'bigendian',
 		'interpret data as big endian - default is cpu endianness');
 	hexCli.u(longOpt: 'usage', 'show this information')
+	hexCli.f(longOpt: 'file', args: 1, 'file to edit')
 	
 	def hexParse = hexCli.parse(args)
-	if (hexParse.u || args.size() == 0) {
+	if (hexParse.u) {
 		hexCli.usage()
 	} else {
 		def bits = 8
@@ -85,6 +100,10 @@ def hexCli = new CliBuilder
 		def bs = 512
 		def blocks = false
 		def offset = 0
+		def fileToEdit
+		
+		if (hexParse.f)
+			fileToEdit = hexParse.f
 		
 		if (hexParse.le)
 			le = true
@@ -98,17 +117,21 @@ def hexCli = new CliBuilder
 		}
 		
 		if (hexParse.w){
-			bits = Integer.parseInt(hexParse.w)
-			bits = bits & 0xF8
-			if (bits == 0)
-				bits = 8
-			else if (bits > 64)
-				bits = 64
+			def numb = Integer.parseInt(hexParse.w)
+			numb = numb >> 4
+			bits = 8 
+			for (i in 1 .. 3) {
+				numb = numb >> 1
+				if (numb & 1) {
+					bits = bits * (2 ** i)
+					break;
+				}
+			}
 		}
 		
 		if (hexParse.o)
 			offset = Integer.parseInt(hexParse.o)
 		
 		def hexFileHandler = new HexFileHandler(le, be, bits, offset, bs,
-			blocks, args[args.size() - 1])	
+			blocks, fileToEdit)	
 	}
