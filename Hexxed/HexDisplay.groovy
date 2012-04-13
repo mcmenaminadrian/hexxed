@@ -7,19 +7,21 @@ class HexDisplay {
 	def displayEngine
 	def fileChannel
 	def ALLOCATE = 0x10
+	def hexFileHandler
 	
-	HexDisplay(def engine, def channel)
+	HexDisplay(def engine, def channel, def hexHandler)
 	{
 		displayEngine = engine
 		fileChannel = channel
+		hexFileHandler = hexHandler
 	}
 	
-	String showLine()
+	String getLine()
 	{
-		return showLine(true)
+		return getLine(true)
 	}
 	
-	String showLine(def advance)
+	String getLine(def advance)
 	{
 		def lineOut
 		def position = fileChannel.position()
@@ -60,13 +62,19 @@ class HexDisplay {
 				}
 			}
 			else {
+				if ((outChar > 0 && outChar < 32) || outChar == 127)
+					outChar = '?'
 				lineOut = lineOut + outChar
 				outChar = '\0'
 			}
 		}
 		
 		def bytes = ByteBuffer.allocate(ALLOCATE)
-		fileChannel.read(bytes, position)
+		def bytesRet = fileChannel.read(bytes, position)
+		if (bytesRet == -1) {
+			hexFileHandler.eOF = true
+			return null
+		}
 		(bytes.array()).eachByte(displayHexLine)
 		lineOut = lineOut + "\t"
 		(bytes.array()).eachByte(displayCharLine)

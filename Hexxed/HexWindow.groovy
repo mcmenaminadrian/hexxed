@@ -24,16 +24,29 @@ class HexWindow {
 		frameHex = windowHex.frame(title:handler.fileName, size:[x, y],
 			show:true){
 			editHex = editorPane(contentType: "text/plain")
-			menuHex = menuBar() {
-				menuFileHex = menu(text: "File", mnemonic: 'F') {
-					menuItem(text: "Exit", mnemonic: 'x',
-						actionPerformed: {dispose()})
+			menuBar() {
+				menu(text: "File", mnemonic: 'F') {
 					menuItem(text: "Load", mnemonic: 'L',
 						actionPerformed: {loadFile()})
-				}
-			menuNavigateHex = menu(text: "Navigate", mnemonic: 'N') {
-				menuNavigateForward = menuItem(text: "Forward", 
+					menuItem(text: "Exit", mnemonic: 'x',
+						actionPerformed: {dispose()})
+			}
+			menu(text: "Navigate", mnemonic: 'N') {
+				menuItem(text: "Forwards", 
 					mnemonic: 'r', actionPerformed: {fileHandler.showLines()})
+				menuItem(text: "Backwards", mnemonic: 'B', actionPerformed:
+					{
+						def curPos = fileHandler.fileChan.position()
+						if (fileHandler.eOF) {
+							curPos = curPos - 480
+							fileHandler.eOF = false
+						} else {
+							curPos = curPos - 960
+						}
+						fileHandler.fileChan.position(curPos)
+						fileHandler.showLines()
+					}
+				)
 			}
 		}
 	}

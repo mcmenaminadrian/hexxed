@@ -14,6 +14,7 @@ class HexFileHandler {
 	def editFile
 	def displayLines
 	def open = false
+	def eOF = false
 	
 	HexFileHandler(def le, def be, def bits, def offset,
 		def bSize, def blocks, def name)
@@ -41,7 +42,10 @@ class HexFileHandler {
 	{		
 		def displayStr = ''
 		for (i in 1 .. 30) {
-			displayStr = displayStr + displayLines.showLine()
+			def nextLine = displayLines.getLine()
+			if (!nextLine)
+				break
+			displayStr = displayStr + nextLine
 		}
 		editFile.editHex.setText(displayStr)
 	}
@@ -59,7 +63,7 @@ class HexFileHandler {
 				fileChan = randomFile.getChannel()
 				fileChan.position(fileOffset)
 				open = true
-				displayLines = new HexDisplay(displayEngine, fileChan)
+				displayLines = new HexDisplay(displayEngine, fileChan, this)
 				showLines()
 			}
 			catch(e) {
