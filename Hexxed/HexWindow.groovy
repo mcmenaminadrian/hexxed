@@ -16,11 +16,17 @@ class HexWindow {
 	def menuNavigateForward
 	def frameHex
 	def windowHex
+	def bitWidthDialog
 	
 	HexWindow(def x, def y, def handler) 
 	{
 		fileHandler = handler
 		windowHex = new SwingBuilder()
+		
+		def moveBackwards = {
+	
+		}
+		
 		frameHex = windowHex.frame(title:handler.fileName, size:[x, y],
 			show:true){
 			editHex = editorPane(contentType: "text/plain")
@@ -34,19 +40,35 @@ class HexWindow {
 			menu(text: "Navigate", mnemonic: 'N') {
 				menuItem(text: "Forwards", 
 					mnemonic: 'r', actionPerformed: {fileHandler.showLines()})
-				menuItem(text: "Backwards", mnemonic: 'B', actionPerformed:
-					{
+				menuItem(text: "Backwards", mnemonic: 'B',
+					actionPerformed: {
 						def curPos = fileHandler.fileChan.position()
 						if (fileHandler.eOF) {
 							curPos = curPos - 480
 							fileHandler.eOF = false
-						} else {
+						} else
 							curPos = curPos - 960
-						}
 						fileHandler.fileChan.position(curPos)
 						fileHandler.showLines()
 					}
 				)
+			}
+			menu(text: "Display", mnemonic: 'D'){
+				menuItem(text: "Set Width", mnemonic: 'W',
+					actionPerformed: {
+						def swingSetWidth = new SwingBuilder()
+						bitWidthDialog = swingSetWidth.dialog(
+							title: "Set Bit Width",
+							visible:true,
+							owner: frameHex){
+								panel(visible:true){
+									radioButton(text: "8 bits", visible:true)
+									radioButton(text: "16 bits")
+									radioButton(text: "32 bits")
+									radioButton(text: "64 bits")
+								}
+							}
+						})
 			}
 		}
 	}

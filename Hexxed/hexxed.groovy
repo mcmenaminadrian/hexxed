@@ -122,12 +122,17 @@ def hexCli = new CliBuilder
 		
 		if (hexParse.w){
 			def numb = Integer.parseInt(hexParse.w)
-			numb = numb >> 4
+			numb = numb >> 3
 			bits = 8 
 			for (i in 1 .. 3) {
 				numb = numb >> 1
 				if (numb & 1) {
-					bits = bits * (2 ** i)
+					if (i == 1)
+						bits = 16
+					else if (i == 2)
+						bits = 32
+					else
+						bits = 64
 					break;
 				}
 			}

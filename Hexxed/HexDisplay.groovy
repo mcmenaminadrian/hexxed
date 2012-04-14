@@ -38,7 +38,7 @@ class HexDisplay {
 		BigInteger numb = 0
 		
 		def displayHexLine = {
-			Long x = 0x00000000000000FF & it
+			Long x = 0xFF & it
 			numb = numb * 256 + x
 			i++
 			if (i == byteCnt) {
@@ -56,6 +56,8 @@ class HexDisplay {
 			if (byteCnt > 1) {
 				i++
 				if (i > 1) {
+					if (outChar < 32 || outChar == 127)
+						outChar = ' '
 					lineOut = lineOut + outChar
 					i = 0
 					outChar = '\0'
@@ -63,7 +65,7 @@ class HexDisplay {
 			}
 			else {
 				if ((outChar > 0 && outChar < 32) || outChar == 127)
-					outChar = '?'
+					outChar = ' '
 				lineOut = lineOut + outChar
 				outChar = '\0'
 			}
