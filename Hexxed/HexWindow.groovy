@@ -2,6 +2,7 @@ package Hexxed
 
 import groovy.swing.SwingBuilder
 import java.awt.Font
+import java.awt.FlowLayout
 import javax.swing.*
 
 
@@ -16,7 +17,6 @@ class HexWindow {
 	def menuNavigateForward
 	def frameHex
 	def windowHex
-	def bitWidthDialog
 	
 	HexWindow(def x, def y, def handler) 
 	{
@@ -36,12 +36,12 @@ class HexWindow {
 						actionPerformed: {loadFile()})
 					menuItem(text: "Exit", mnemonic: 'x',
 						actionPerformed: {dispose()})
-			}
-			menu(text: "Navigate", mnemonic: 'N') {
-				menuItem(text: "Forwards", 
+				}
+				menu(text: "Navigate", mnemonic: 'N') {
+					menuItem(text: "Forwards", 
 					mnemonic: 'r', actionPerformed: {fileHandler.showLines()})
-				menuItem(text: "Backwards", mnemonic: 'B',
-					actionPerformed: {
+					menuItem(text: "Backwards", mnemonic: 'B',
+						actionPerformed: {
 						def curPos = fileHandler.fileChan.position()
 						if (fileHandler.eOF) {
 							curPos = curPos - 480
@@ -52,28 +52,33 @@ class HexWindow {
 						fileHandler.showLines()
 					}
 				)
-			}
-			menu(text: "Display", mnemonic: 'D'){
-				menuItem(text: "Set Width", mnemonic: 'W',
-					actionPerformed: {
+				}
+				menu(text: "Display", mnemonic: 'D'){
+					menuItem(text: "Set Width", mnemonic: 'W',
+						actionPerformed: {					
 						def swingSetWidth = new SwingBuilder()
-						bitWidthDialog = swingSetWidth.dialog(
+						def bitWidthDialog = swingSetWidth.frame(
 							title: "Set Bit Width",
-							visible:true,
-							owner: frameHex){
-								panel(visible:true){
-									radioButton(text: "8 bits", visible:true)
-									radioButton(text: "16 bits")
-									radioButton(text: "32 bits")
-									radioButton(text: "64 bits")
-								}
+							size: [450, 190],
+						){
+							panel(layout: new FlowLayout(FlowLayout.CENTER)){
+								buttonGroup(id: 'widthButtonGroup')
+								radioButton(text: "8 bits", buttonGroup: widthButtonGroup)
+								radioButton(text: "16 bits", buttonGroup: widthButtonGroup, selected:true)
+								radioButton(text: "32 bits", buttonGroup: widthButtonGroup)
+								radioButton(text: "64 bits", buttonGroup: widthButtonGroup)		
 							}
-						})
+						}
+					
+						bitWidthDialog.pack()
+						bitWidthDialog.show()
+					}
+				)	
+				}
 			}
 		}
-	}
-	windowHex.lookAndFeel("system")
-	editHex.setFont(new Font("Monospaced", Font.PLAIN, 14))
+		windowHex.lookAndFeel("system")
+		editHex.setFont(new Font("Monospaced", Font.PLAIN, 14))
 
 	}
 	
