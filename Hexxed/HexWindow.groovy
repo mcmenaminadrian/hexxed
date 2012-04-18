@@ -21,12 +21,7 @@ class HexWindow {
 	HexWindow(def x, def y, def handler) 
 	{
 		fileHandler = handler
-		windowHex = new SwingBuilder()
-		
-		def moveBackwards = {
-	
-		}
-		
+		windowHex = new SwingBuilder()	
 		frameHex = windowHex.frame(title:handler.fileName, size:[x, y],
 			show:true){
 			editHex = editorPane(contentType: "text/plain")
@@ -56,30 +51,27 @@ class HexWindow {
 				menu(text: "Display", mnemonic: 'D'){
 					menuItem(text: "Set Width", mnemonic: 'W',
 						actionPerformed: {					
-						def swingSetWidth = new SwingBuilder()
-						def bitWidthDialog = swingSetWidth.frame(
+						def bitWidthDialog = dialog(
 							title: "Set Bit Width",
 							size: [450, 190],
-						){
-							panel(layout: new FlowLayout(FlowLayout.CENTER)){
-								buttonGroup(id: 'widthButtonGroup')
+						) { 
+							panel(){
+								def widthButtonGroup = buttonGroup() 
 								radioButton(text: "8 bits", buttonGroup: widthButtonGroup)
 								radioButton(text: "16 bits", buttonGroup: widthButtonGroup, selected:true)
 								radioButton(text: "32 bits", buttonGroup: widthButtonGroup)
-								radioButton(text: "64 bits", buttonGroup: widthButtonGroup)		
+								radioButton(text: "64 bits", buttonGroup: widthButtonGroup)
 							}
 						}
-					
-						bitWidthDialog.pack()
+						
 						bitWidthDialog.show()
 					}
-				)	
-				}
+				)
 			}
 		}
-		windowHex.lookAndFeel("system")
-		editHex.setFont(new Font("Monospaced", Font.PLAIN, 14))
-
+		}
+	windowHex.lookAndFeel("system")
+	editHex.setFont(new Font("Monospaced", Font.PLAIN, 14))
 	}
 	
 	void loadFile()
