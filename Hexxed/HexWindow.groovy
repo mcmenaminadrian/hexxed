@@ -56,14 +56,35 @@ class HexWindow {
 							size: [450, 190],
 						) { 
 							panel(){
-								def widthButtonGroup = buttonGroup() 
-								radioButton(text: "8 bits", buttonGroup: widthButtonGroup)
-								radioButton(text: "16 bits", buttonGroup: widthButtonGroup, selected:true)
-								radioButton(text: "32 bits", buttonGroup: widthButtonGroup)
-								radioButton(text: "64 bits", buttonGroup: widthButtonGroup)
-							}
+								def widthButtonGroup = buttonGroup()
+								def bitSize = 4 
+								for (i in 1 .. 4) {
+									bitSize = bitSize * 2
+									def strBitSz = "$bitSize bits"
+									def curButton = radioButton(text: strBitSz,
+										buttonGroup: widthButtonGroup,
+										label: bitSize,
+										)
+									curButton.actionPerformed = {
+											fileHandler.displayEngine.bits = (curButton.label).toInteger()
+											def curPos = fileHandler.fileChan.position()
+												if (fileHandler.eOF) {
+													curPos = curPos - 480
+													fileHandler.eOF = false
+												} else
+													curPos = curPos - 960
+												if (curPos < 0)
+													curPos = 0
+												fileHandler.fileChan.position(curPos)
+												fileHandler.showLines()
+											}
+									if (i == handler.displayEngine.bits)
+									curButton.selected = true
+									}
+	
+								}
 						}
-						
+						bitWidthDialog.pack()
 						bitWidthDialog.show()
 					}
 				)
