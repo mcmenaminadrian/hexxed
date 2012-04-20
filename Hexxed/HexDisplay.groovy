@@ -64,7 +64,7 @@ class HexDisplay {
 				}
 			}
 			else {
-				if ((outChar > 0 && outChar < 32) || outChar == 127)
+				if (outChar< 32 || outChar == 127)
 					outChar = ' '
 				lineOut = lineOut + outChar
 				outChar = '\0'
