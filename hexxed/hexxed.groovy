@@ -1,79 +1,26 @@
-package Hexxed
+package hexxed
 
 import java.nio.channels.FileChannel
 
-class HexFileHandler {
 
-	def fileName
-	def fileHandle
-	def fileOffset
-	def displayEngine
-	def blockSize
-	def fileChan
-	def randomFile
-	def editFile
-	def displayLines
-	def open = false
-	def eOF = false
-	
-	HexFileHandler(def le, def be, def bits, def offset,
-		def bSize, def blocks, def name)
-	{
-		displayEngine = new HexDisplayState(le, be, bits, bSize, blocks)
-		fileName = name
-		fileOffset = offset
-		blockSize = bSize
+class HexxedStart
+{
 
-		editFile = new HexWindow(640, 480, this)
-		setNewFile(name)
-	}
-	
-	void finalize()
+	HexxedStart(littleEndian, bigEndian, bitWidth, offsetInFile, blockSize,
+	useBlocks, fileToEdit)
 	{
-		super.finalize()
-		if (open) {
-			fileChan.close()
-			randomFile.close()
-			open = false
-		}
-	}
+		def hexxedStatus		//Model
+		def hexxedWindow		//View
+		def hexxedFile			//Container
 	
-	void showLines()
-	{		
-		def displayStr = ''
-		for (i in 1 .. 30) {
-			def nextLine = displayLines.getLine()
-			if (!nextLine)
-				break
-			displayStr = displayStr + nextLine
-		}
-		editFile.editHex.setText(displayStr)
+		hexxedStatus = HexxedStatus.currentStatus
+		hexxedStatus.littleEndian = littleEndian
+		hexxedStatus.bigEndian = bigEndian
+		hexxedStatus.bitWidth = bitWidth
+		hexxedStatus.useBlocks = useBlocks
+		hexxedStatus.blockSize = blockSize
 	}
-	
-	void setNewFile(def fileInName)
-	{
-		if (open) {
-			fileChan.close()
-			randomFile.close()
-			open = false
-		}
-		if (fileInName) {
-			try {
-				randomFile = new RandomAccessFile(fileInName, "rw")
-				fileChan = randomFile.getChannel()
-				fileChan.position(fileOffset)
-				open = true
-				displayLines = new HexDisplay(displayEngine, fileChan, this)
-				showLines()
-			}
-			catch(e) {
-				println "Unable to open file $fileInName, exception $e"
-			}
-		}
-		fileName = fileInName
-		editFile.frameHex.title = fileName
-	}
-	
+
 }
 
 def hexCli = new CliBuilder
@@ -141,6 +88,6 @@ def hexCli = new CliBuilder
 		if (hexParse.o)
 			offset = Integer.parseInt(hexParse.o)
 		
-		def hexFileHandler = new HexFileHandler(le, be, bits, offset, bs,
+		def hexFileHandler = new HexxedStart(le, be, bits, offset, bs,
 			blocks, fileToEdit)	
 	}
