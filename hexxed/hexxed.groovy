@@ -9,7 +9,7 @@ class HexxedStart
 	HexxedStart(littleEndian, bigEndian, bitWidth, offsetInFile, blockSize,
 	useBlocks, fileToEdit)
 	{
-		def hexxedStatus		//Model
+		def hexxedStatus		//Model - a singleton
 		def hexxedWindow		//View
 		def hexxedFile			//Container
 	
