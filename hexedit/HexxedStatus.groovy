@@ -11,14 +11,29 @@ class HexxedStatus {
 	def useBlocks
 	def blockSize
 	def windowEdit
+	def fileOpen
+	def fileName
+	def offset
 	
 	def subscribersLittleEndian = []
 	def subscribersBigEndian = []
 	def subscribersBitWidth = []
 	def subscribersUseBlocks = []
 	def subscribersBlockSize = []
+	def subscribersFileOpen = []
+	def subscribersOffset = []
 	
+	void setOffset(def off)
+	{
+		offset = off
+		notifyOffset(subscribersOffset)
+	}
 	
+	void setFileOpen(def fo)
+	{
+		fileOpen = fo
+		notifyFO(subscribersFileOpen)
+	}
 	
 	void setLittleEndian(def le)
 	{
@@ -57,27 +72,32 @@ class HexxedStatus {
 	
 	void notifyBE(def list)
 	{
-		list.each{$it.updateBE(bigEndian)}
+		list.each{it.updateBE(bigEndian)}
 	}
 	
 	void notifyLE(def list)
 	{
-		list.each{$it.updateLE(littleEndian)}
+		list.each{it.updateLE(littleEndian)}
 	}
 		
 	void notifyBW(def list)
 	{
-		list.each{$it.updateBW(bitWidth)}
+		list.each{it.updateBW(bitWidth)}
 	}
 	
 	void notifyUB(def list)
 	{
-		list.each{$it.updateUB(useBlocks)}
+		list.each{it.updateUB(useBlocks)}
 	}
 	
 	void notifyBS(def list)
 	{
-		list.each{$it.updateBS(blockSize)}
+		list.each{it.updateBS(blockSize)}
+	}
+	
+	void notifyFO(def list)
+	{
+		list.each{it.updateFO(fileOpen)}
 	}
 	
 	void subscribeBigEndian(def subscriber)
@@ -94,7 +114,6 @@ class HexxedStatus {
 	
 	void subscribeLittleEndian(def subscriber)
 	{
-		//cannot subscribe twice
 		subscribersLittleEndian -= subscriber
 		subscribersLittleEndian << subscriber
 	}
@@ -106,7 +125,6 @@ class HexxedStatus {
 	
 	void subscribeBitWidth(def subscriber)
 	{
-		//cannot subscribe twice
 		subscribersBitWidth -= subscriber
 		subscribersBitWidth << subscriber
 	}
@@ -117,7 +135,6 @@ class HexxedStatus {
 	}
 	void subscribeUseBlocks(def subscriber)
 	{
-		//cannot subscribe twice
 		subscribersUseBlocks -= subscriber
 		subscribersUseBlocks << subscriber
 	}
@@ -129,7 +146,6 @@ class HexxedStatus {
 
 	void subscribeBlockSize(def subscriber)
 	{
-		//cannot subscribe twice
 		subscribersBlockSize -= subscriber
 		subscribersBlockSize << subscriber
 	}
@@ -137,6 +153,28 @@ class HexxedStatus {
 	void unsubscribeBlockSize(def subscriber)
 	{
 		subscribersBlockSize -= subscriber
+	}
+	
+	void subscribeFileOpen(def subscriber)
+	{
+		subscribersFileOpen -= subscriber
+		subscribersFileOpen << subscriber
+	}
+	
+	void unsubscribeFileOpen(def subscriber)
+	{
+		subscribersFileOpen -= subscriber
+	}
+	
+	void subscribeOffset(def subscriber)
+	{
+		subscribersOffset -= subscriber
+		subscribersOffset << subscribe
+	}
+	
+	void unsubscribeOffset(def subscriber)
+	{
+		subscribersOffset -= subscriber
 	}
 	
 }
