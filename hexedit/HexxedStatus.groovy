@@ -25,6 +25,7 @@ class HexxedStatus {
 	def subscribersBlockSize = []
 	def subscribersFileOpen = []
 	def subscribersOffset = []
+	def subscribersFileName = []
 	
 	void setOffset(def off)
 	{
@@ -73,6 +74,16 @@ class HexxedStatus {
 		windowEdit = we
 	}
 	
+	void changeFileName()
+	{
+		notifyFN(subscribersFileName)
+	}
+	
+	void notifyFN(def listSubs)
+	{
+		listSubs.each{it.updateFN()}
+	}
+	
 	void notifyBE(def listSubs)
 	{
 		listSubs.each{it.updateBE(bigEndian)}
@@ -106,6 +117,17 @@ class HexxedStatus {
 	void notifyOffset(def listSubs)
 	{
 		listSubs.each{it.updateOff(offset)}
+	}
+	
+	void subscribeFileName(def subscriber)
+	{
+		subscribersFileName -= subscriber
+		subscribersFileName << subscriber
+	}
+	
+	void unsubscribeFileName(def subscriber)
+	{
+		subscribersFileName -= subscriber
 	}
 	
 	void subscribeBigEndian(def subscriber)

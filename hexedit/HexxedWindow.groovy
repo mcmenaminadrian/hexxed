@@ -111,7 +111,7 @@ class HexxedWindow {
 		)
 		loadDialog.showOpenDialog()
 		statusHolder.fileName = loadDialog.getSelectedFile()
-		statusHolder.setFileOpen(true)
+		statusHolder.changeFileName()
 		}
 	
 	def forward()

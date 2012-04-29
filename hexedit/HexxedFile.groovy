@@ -10,13 +10,17 @@ class HexxedFile {
 	{
 		hexxedStatus = statusObject
 		hexxedStatus.subscribeFileOpen(this)
+		hexxedStatus.subscribeFileName(this)
+	}
+	
+	void updateFN()
+	{
+		getNewFile(hexxedStatus.fileName)
 	}
 	
 	void updateFO(def fileStatus)
 	{
-		if (fileStatus)
-			getNewFile(hexxedStatus.fileName)
-		else {
+		if (!fileStatus) {
 			if (fileChan)
 				fileChan.close()
 			if (randomFile)
