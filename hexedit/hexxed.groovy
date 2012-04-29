@@ -1,4 +1,4 @@
-package hexxed
+package hexedit
 
 import java.nio.channels.FileChannel
 
@@ -7,18 +7,22 @@ class HexxedStart
 {
 
 	HexxedStart(littleEndian, bigEndian, bitWidth, offsetInFile, blockSize,
-	useBlocks, fileToEdit)
+	useBlocks, fileToEdit, x, y)
 	{
 		def hexxedStatus		//Model - a singleton
 		def hexxedWindow		//View
 		def hexxedFile			//Container
 	
 		hexxedStatus = HexxedStatus.currentStatus
-		hexxedStatus.littleEndian = littleEndian
-		hexxedStatus.bigEndian = bigEndian
-		hexxedStatus.bitWidth = bitWidth
-		hexxedStatus.useBlocks = useBlocks
-		hexxedStatus.blockSize = blockSize
+		hexxedStatus.setLittleEndian(littleEndian)
+		hexxedStatus.setBigEndian(bigEndian)
+		hexxedStatus.setBitWidth(bitWidth)
+		hexxedStatus.setUseBlocks(useBlocks)
+		hexxedStatus.setBlockSize(blockSize)
+		
+		hexxedWindow = new HexxedWindow(x, y)
+		hexxedStatus.setWindowEdit(hexxedWindow)
+		
 	}
 
 }
@@ -40,6 +44,8 @@ def hexCli = new CliBuilder
 		'interpret data as big endian - default is cpu endianness');
 	hexCli.u(longOpt: 'usage', 'show this information')
 	hexCli.f(longOpt: 'file', args: 1, 'file to edit')
+	hexCli.x(longOpt: 'x', args: 1, 'width of window (default 640 pixels)')
+	hexCli.y(longOpt: 'y', args: 1, 'height of window (default 480 pixels)')
 	
 	def hexParse = hexCli.parse(args)
 	if (hexParse.u) {
@@ -52,6 +58,8 @@ def hexCli = new CliBuilder
 		def blocks = false
 		def offset = 0
 		def fileToEdit
+		def xw = 640
+		def yh = 480
 		
 		if (hexParse.f)
 			fileToEdit = hexParse.f
@@ -87,7 +95,12 @@ def hexCli = new CliBuilder
 		
 		if (hexParse.o)
 			offset = Integer.parseInt(hexParse.o)
+
+		if (hexParse.x)
+			xw = Integer.parseInt(hexParse.x)
+		if (hexParse.y)
+			yh = Integer.parseInt(hexParse.y)
 		
 		def hexFileHandler = new HexxedStart(le, be, bits, offset, bs,
-			blocks, fileToEdit)	
+			blocks, fileToEdit, xw, yh)	
 	}
