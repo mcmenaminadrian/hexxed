@@ -1,17 +1,20 @@
 package hexedit
-
 class HexxedStatus {
 	
+	
 	private HexxedStatus() {}
+	
 	private static final currentStatus = new HexxedStatus()
+	
 	static getCurrentStatus() { return currentStatus}
+	
 	def littleEndian
 	def bigEndian
 	def bitWidth
 	def useBlocks
 	def blockSize
 	def windowEdit
-	def fileOpen
+	def fileOpen = false
 	def fileName
 	def offset
 	
@@ -70,39 +73,43 @@ class HexxedStatus {
 		windowEdit = we
 	}
 	
-	void notifyBE(def list)
+	void notifyBE(def listSubs)
 	{
-		list.each{it.updateBE(bigEndian)}
+		listSubs.each{it.updateBE(bigEndian)}
 	}
 	
-	void notifyLE(def list)
+	void notifyLE(def listSubs)
 	{
-		list.each{it.updateLE(littleEndian)}
+		listSubs.each{it.updateLE(littleEndian)}
 	}
 		
-	void notifyBW(def list)
+	void notifyBW(def listSubs)
 	{
-		list.each{it.updateBW(bitWidth)}
+		listSubs.each{it.updateBW(bitWidth)}
 	}
 	
-	void notifyUB(def list)
+	void notifyUB(def listSubs)
 	{
-		list.each{it.updateUB(useBlocks)}
+		listSubs.each{it.updateUB(useBlocks)}
 	}
 	
-	void notifyBS(def list)
+	void notifyBS(def listSubs)
 	{
-		list.each{it.updateBS(blockSize)}
+		listSubs.each{it.updateBS(blockSize)}
 	}
 	
-	void notifyFO(def list)
+	void notifyFO(def listSubs)
 	{
-		list.each{it.updateFO(fileOpen)}
+		listSubs.each{it.updateFO(fileOpen)}
+	}
+	
+	void notifyOffset(def listSubs)
+	{
+		listSubs.each{it.updateOff(offset)}
 	}
 	
 	void subscribeBigEndian(def subscriber)
 	{
-		//cannot subscribe twice
 		subscribersBigEndian -= subscriber
 		subscribersBigEndian << subscriber
 	}
@@ -133,6 +140,7 @@ class HexxedStatus {
 	{
 		subscribersBitWidth -= subscriber
 	}
+	
 	void subscribeUseBlocks(def subscriber)
 	{
 		subscribersUseBlocks -= subscriber

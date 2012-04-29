@@ -19,7 +19,7 @@ class HexxedStart
 		hexxedStatus.setBitWidth(bitWidth)
 		hexxedStatus.setUseBlocks(useBlocks)
 		hexxedStatus.setBlockSize(blockSize)
-		hexxedStatus.fileOpen = false
+		hexxedStatus.setOffset(offsetInFile)
 		
 		hexxedWindow = new HexxedWindow(x, y, hexxedStatus)
 		hexxedStatus.setWindowEdit(hexxedWindow)

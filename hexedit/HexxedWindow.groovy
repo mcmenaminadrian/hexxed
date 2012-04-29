@@ -52,9 +52,9 @@ class HexxedWindow {
 		statusHolder.subscribeFileOpen(this)
 	}
 	
-	void updateFO(status)
+	void updateFO(def fileStatus)
 	{
-		if (status)
+		if (fileStatus)
 			swingWindow.title = statusHolder.fileName
 		else
 			swingWindow.title = "HEXXED"
@@ -111,7 +111,7 @@ class HexxedWindow {
 		)
 		loadDialog.showOpenDialog()
 		statusHolder.fileName = loadDialog.getSelectedFile()
-		statusHolder.notifyFO(true)
+		statusHolder.setFileOpen(true)
 		}
 	
 	def forward()
