@@ -1,6 +1,7 @@
 package hexedit
 
 import java.nio.channels.FileChannel
+import java.awt.*
 
 
 class HexxedStart

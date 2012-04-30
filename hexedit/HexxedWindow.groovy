@@ -2,7 +2,7 @@ package hexedit
 
 import groovy.swing.SwingBuilder
 import javax.swing.*
-import java.awt.FlowLayout
+import java.awt.*
 
 class HexxedWindow {
 
@@ -10,6 +10,8 @@ class HexxedWindow {
 	def swingBuilder
 	def statusHolder
 	def bitsButtons = []
+	def tableHex
+	def tableChar
 	
 	HexxedWindow(def x, def y, def controller)
 	{
@@ -19,6 +21,8 @@ class HexxedWindow {
 		swingBuilder = new SwingBuilder()
 		swingWindow = swingBuilder.frame(title: "HEXXED", size: [x, y],
 			show: true) {
+			scrollPane()
+			gridBagLayout()
 			//menu
 			menuBar() {
 				menu(text: "File", mnemonic: 'F'){
@@ -48,6 +52,8 @@ class HexxedWindow {
 						actionPerformed: { displayGPL() })
 				}
 			}
+			tableHex = table()
+			tableChar = table()
 		}
 		statusHolder.subscribeFileOpen(this)
 	}
@@ -112,7 +118,7 @@ class HexxedWindow {
 		loadDialog.showOpenDialog()
 		statusHolder.fileName = loadDialog.getSelectedFile()
 		statusHolder.changeFileName()
-		}
+	}
 	
 	def forward()
 	{}
