@@ -70,7 +70,7 @@ class HexxedWindow {
 	{
 		def bitWidthDialog = swingBuilder.frame(
 			title: "Set Bit Width",
-			size: [450, 190],
+			size: [450, 190]
 		){
 			panel(layout: new FlowLayout(FlowLayout.CENTER)){
 				def butGrp = buttonGroup(id: "widthButtonGroup")
@@ -136,5 +136,24 @@ class HexxedWindow {
 	{}
 	
 	def displayGPL()
-	{}
+	{
+		def name = "Hexxed"
+		def version = "0.1"
+		def copyright = "copyright (c) Adrian McMenamin, 2012"
+		def message =
+		name +  " v" + version + "\n" + "\n" + copyright +
+		"\n\nThis program is free software, You can redistribute" +
+		"\nit and/or modify it under the terms of the GNU" +
+		"\nGeneral Public License (GPL) as published by the " +
+		"\nFree Software Foundation; either version 3 of the" +
+		"\nlicence, or (at your option) any later version.\n";
+		
+		def gPLDialog = swingBuilder.frame(title: "Licence terms",
+			size: [320, 200]) {
+			scrollPane(constraints: BorderLayout.CENTER){
+				textArea(text: message)}
+		}
+		gPLDialog.pack()
+		gPLDialog.show()
+	}
 }
