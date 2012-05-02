@@ -27,6 +27,20 @@ class HexxedStatus {
 	def subscribersOffset = []
 	def subscribersFileName = []
 	
+	def valueAt(def row, def col)
+	{
+		def position = offset + row * 16
+		if (col == 0) {
+			//return address
+			if (useBlocks) {
+				def decBlock = (position / blockSize) as Integer
+				def blockCnt = String.format("%08X", decBlock)
+				def offCnt = String.format("%04X", offset % blockSize)
+				return "$blockCnt:$offCnt"
+			}
+		}
+	}
+	
 	void setOffset(def off)
 	{
 		offset = off

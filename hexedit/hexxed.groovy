@@ -28,7 +28,6 @@ class HexxedStart
 		hexxedFile = new HexxedFile(hexxedStatus)
 		if (fileToEdit)
 			hexxedFile.getNewFile(fileToEdit)
-		
 	}
 
 }
