@@ -5,12 +5,15 @@ class HexxedFile {
 	def hexxedStatus
 	def fileChan
 	def randomFile
+	def tableModel
 
 	HexxedFile(def statusObject)
 	{
 		hexxedStatus = statusObject
 		hexxedStatus.subscribeFileOpen(this)
 		hexxedStatus.subscribeFileName(this)
+		fileChan = null
+		randomFile = null
 	}
 	
 	void updateFN()
@@ -18,9 +21,9 @@ class HexxedFile {
 		getNewFile(hexxedStatus.fileName)
 	}
 	
-	void updateFO(def fileStatus)
+	void updateFO(def fileOpen)
 	{
-		if (!fileStatus) {
+		if (!fileOpen) {
 			if (fileChan)
 				fileChan.close()
 			if (randomFile)
