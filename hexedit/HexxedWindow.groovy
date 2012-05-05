@@ -52,8 +52,9 @@ class HexxedWindow {
 						actionPerformed: { displayGPL() })
 				}
 			}
-			tableHex = table()
+			tableHex = table() {visible:true}
 			tableChar = table()
+			tableHex.setModel(new HexxedTableModel(statusHolder))
 		}
 		statusHolder.subscribeFileOpen(this)
 	}

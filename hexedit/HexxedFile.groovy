@@ -43,6 +43,7 @@ class HexxedFile {
 				randomFile = new RandomAccessFile(fileToGet, "rw")
 				fileChan = randomFile.getChannel()
 				fileChan.position(hexxedStatus.offset)
+				hexxedStatus.fileChan = fileChan
 				hexxedStatus.fileName = fileToGet
 				hexxedStatus.setFileOpen(true)
 			}

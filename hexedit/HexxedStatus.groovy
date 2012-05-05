@@ -1,4 +1,8 @@
 package hexedit
+
+import javax.imageio.IIOException
+import java.nio.ByteBuffer
+
 class HexxedStatus {
 	
 	
@@ -17,6 +21,7 @@ class HexxedStatus {
 	def fileOpen = false
 	def fileName
 	def offset
+	def fileChan
 	
 	def subscribersLittleEndian = []
 	def subscribersBigEndian = []
@@ -30,7 +35,7 @@ class HexxedStatus {
 	def valueAt(def row, def col)
 	{
 		def position = offset + row * 16
-		if (col == 0) {
+		if (col == 1) {
 			//return address
 			if (useBlocks) {
 				def decBlock = (position / blockSize) as Integer
@@ -39,6 +44,46 @@ class HexxedStatus {
 				return "$blockCnt:$offCnt"
 			}
 		}
+		
+		if (!fileChan)
+			return
+		
+		def byteCount = 1
+		if (bitWidth == 8)
+			position = offset + (col)
+		else if (bitWidth == 16) {
+			byteCount = 2 
+			position = offset + (col) * 2
+		}
+		else if (bitWidth == 32) {
+			byteCount = 4
+			position = offset + (col) * 4
+		}
+		else {
+			byteCount = 8 
+			position = offset + (col) * 8
+		}
+		
+		def bytes = ByteBuffer.allocate(byteCount)
+		def bytesRet = fileChan.read(bytes, position)
+		if (bytesRet != byteCount) {
+			println "Could not read from file channel"
+			throw new IIOException()
+		}
+		
+		def outStr = ""
+		def i = 0
+		BigInteger numb = 0
+
+		def displayHex = {
+			Long x = 0xFF & it
+			numb = x + numb * 256
+			if (++i == byteCount)
+				outStr = String.format("%0${byteCount * 2}X", numb)
+		}
+		
+		bytes.array().eachByte(displayHex)
+		return outStr
 	}
 	
 	void setOffset(def off)
@@ -213,7 +258,7 @@ class HexxedStatus {
 	void subscribeOffset(def subscriber)
 	{
 		subscribersOffset -= subscriber
-		subscribersOffset << subscribe
+		subscribersOffset << subscriber
 	}
 	
 	void unsubscribeOffset(def subscriber)

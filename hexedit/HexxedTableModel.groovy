@@ -7,33 +7,32 @@ class HexxedTableModel extends AbstractTableModel {
 	def hexxedStatus
 	def hexxedFile
 	
-	HexxedTableModel(def statusObject, def fileToModel)
+	HexxedTableModel(def statusObject)
 	{
 		hexxedStatus = statusObject
-		hexxedFile = fileToModel
 		hexxedStatus.subscribeOffset(this)
 		hexxedStatus.subscribeBitWidth(this)
 		hexxedStatus.subscribeBlockSize(this)
 	}
 	
-	int getRowCount() { return 16}
+	int getRowCount() { return 17}
 	
 	int getColumnCount()
 	{
 		def width = hexxedStatus.bitWidth
-		if width == 8
+		if (width == 8)
 			return 17
-		else if width == 16
+		else if (width == 16)
 			return 9
-		else if width == 8
+		else if (width == 8)
 			return 5
 		else
 			return 3
 	}
 	
-	def getValueAt(def row, def col)
+	def getValueAt(int row, int col)
 	{
-		if (row > getRowCount() || col > getColCount())
+		if (row > getRowCount() || col > getColumnCount())
 			return null
 		return hexxedStatus.valueAt(row, col)
 	}
