@@ -35,33 +35,35 @@ class HexxedStatus {
 	def valueAt(def row, def col)
 	{
 		def position = offset + row * 16
-		if (col == 1) {
+		if (col == 0) {
 			//return address
 			if (useBlocks) {
 				def decBlock = (position / blockSize) as Integer
 				def blockCnt = String.format("%08X", decBlock)
 				def offCnt = String.format("%04X", offset % blockSize)
 				return "$blockCnt:$offCnt"
-			}
+			} else
+				return String.format("%08X", position)
 		}
+
 		
 		if (!fileChan)
 			return
 		
 		def byteCount = 1
 		if (bitWidth == 8)
-			position = offset + (col)
+			position += col - 1
 		else if (bitWidth == 16) {
 			byteCount = 2 
-			position = offset + (col) * 2
+			position += (col - 1) * 2
 		}
 		else if (bitWidth == 32) {
 			byteCount = 4
-			position = offset + (col) * 4
+			position += (col - 1) * 4
 		}
 		else {
 			byteCount = 8 
-			position = offset + (col) * 8
+			position += (col - 1) * 8
 		}
 		
 		def bytes = ByteBuffer.allocate(byteCount)

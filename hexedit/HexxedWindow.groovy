@@ -2,6 +2,7 @@ package hexedit
 
 import groovy.swing.SwingBuilder
 import javax.swing.*
+import javax.swing.table.*
 import java.awt.*
 
 class HexxedWindow {
@@ -10,8 +11,10 @@ class HexxedWindow {
 	def swingBuilder
 	def statusHolder
 	def bitsButtons = []
-	def tableHex
+	def tableHex = null
 	def tableChar
+	def tableHexHeader
+	
 	
 	HexxedWindow(def x, def y, def controller)
 	{
@@ -21,7 +24,6 @@ class HexxedWindow {
 		swingBuilder = new SwingBuilder()
 		swingWindow = swingBuilder.frame(title: "HEXXED", size: [x, y],
 			show: true) {
-			scrollPane()
 			gridBagLayout()
 			//menu
 			menuBar() {
@@ -52,11 +54,13 @@ class HexxedWindow {
 						actionPerformed: { displayGPL() })
 				}
 			}
-			tableHex = table() {visible:true}
-			tableChar = table()
+			scrollPane() {
+			tableHex = table() {visible:true}}
+			tableChar = table() {visble: true}
 			tableHex.setModel(new HexxedTableModel(statusHolder))
 		}
 		statusHolder.subscribeFileOpen(this)
+		statusHolder.subscribeBitWidth(this)
 	}
 	
 	void updateFO(def fileStatus)
@@ -65,6 +69,15 @@ class HexxedWindow {
 			swingWindow.title = statusHolder.fileName
 		else
 			swingWindow.title = "HEXXED"
+	}
+	
+	void updateBW(def bitWidth)
+	{
+		def tableModel = tableHex.getModel()
+		tableHex.createDefaultColumnsFromModel()
+		tableModel.colNames.eachWithIndex { name, i ->
+			tableHex.getColumnModel().getColumn(i).setHeaderValue(name)
+		}
 	}
 	
 	def chooseWidth()
@@ -108,7 +121,7 @@ class HexxedWindow {
 			if (it.isSelected()) {
 				statusHolder.setBitWidth(i)
 			}
-		}	
+		}
 	}
 	
 	def loadFile()
@@ -122,10 +135,18 @@ class HexxedWindow {
 	}
 	
 	def forward()
-	{}
+	{
+		statusHolder.offset += 256
+	}
 	
 	def backward()
-	{}
+	{
+		def pos = statusHolder.offset
+		if (pos >= 256)
+			statusHolder.offset -= 256
+		else
+			statusHolder.offset = 0 
+	}
 	
 	def nextBlock()
 	{}
