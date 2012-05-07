@@ -45,7 +45,6 @@ class HexxedStatus {
 			} else
 				return String.format("%08X", position)
 		}
-
 		
 		if (!fileChan)
 			return
@@ -87,7 +86,45 @@ class HexxedStatus {
 		bytes.array().eachByte(displayHex)
 		return outStr
 	}
-	
+
+	def stringAt(def row)
+	{
+		if (!fileChan)
+			return null
+		def byteCnt = (bitWidth == 8) 1:2
+		def lineOut
+		
+		char outChar = '\0'
+		def displayCharLine = {
+			outChar = outChar * 256 + it
+			if (byteCnt > 1) {
+				i++
+				if (i > 1) {
+					if (outChar < 32 || outChar == 127)
+						outChar = ' '
+					lineOut = lineOut + outChar
+					i = 0
+					outChar = '\0'
+				}
+			} else {
+				if (outChar< 32 || outChar == 127)
+					outChar = ' '
+				lineOut = lineOut + outChar
+				outChar = '\0'
+			}
+		}
+		
+		
+		def bytes = ByteBuffer.allocate(16)
+		def bytesRet = fileChan.read(bytes, position)
+		if (bytesRet != 16) {
+			println "Could not read from file channel"
+			throw new IIOException()
+		}
+		
+		bytes.array().eachByte(displayCharLine)
+		return lineOut
+	}
 	void setOffset(def off)
 	{
 		offset = off

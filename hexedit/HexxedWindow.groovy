@@ -55,9 +55,13 @@ class HexxedWindow {
 				}
 			}
 			scrollPane() {
-			tableHex = table() {visible:true}}
-			tableChar = table() {visble: true}
+				tableHex = table() {visible:true}
+			}
+			scrollPane() {
+				tableChar = table() {visble: true}
+			}
 			tableHex.setModel(new HexxedTableModel(statusHolder))
+			tableChar.setModel(new HexxedCharTableModel(statusHolder))
 		}
 		statusHolder.subscribeFileOpen(this)
 		statusHolder.subscribeBitWidth(this)
