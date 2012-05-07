@@ -91,10 +91,13 @@ class HexxedStatus {
 	{
 		if (!fileChan)
 			return null
-		def byteCnt = (bitWidth == 8) 1:2
-		def lineOut
 		
+		def position = offset + row * 16	
+		def byteCnt = (bitWidth == 8) ? 1 : 2
+		def lineOut = ""
 		char outChar = '\0'
+		def i = 0
+		
 		def displayCharLine = {
 			outChar = outChar * 256 + it
 			if (byteCnt > 1) {
