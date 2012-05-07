@@ -10,7 +10,7 @@ class HexxedStatus {
 	
 	private static final currentStatus = new HexxedStatus()
 	
-	static getCurrentStatus() { return currentStatus}
+	static getCurrentStatus() {return currentStatus}
 	
 	def littleEndian
 	def bigEndian
@@ -72,15 +72,28 @@ class HexxedStatus {
 			throw new IIOException()
 		}
 		
+		def littleEndianNumb = []
 		def outStr = ""
 		def i = 0
 		BigInteger numb = 0
 
 		def displayHex = {
-			Long x = 0xFF & it
-			numb = x + numb * 256
-			if (++i == byteCount)
-				outStr = String.format("%0${byteCount * 2}X", numb)
+			if (bitWidth == 8 || bigEndian) {
+				Long x = 0xFF & it
+				numb = x + numb * 256
+				if (++i == byteCount)
+					outStr = String.format("%0${byteCount * 2}X", numb)
+			} else {
+				Long x = 0xFF & it
+				littleEndianNumb << x
+				if (++i == byteCount) {
+					def littleEndianList = littleEndianNumb.reverse()
+					littleEndianList.each() {
+						numb = numb * 256 + it
+					}
+					outStr = String.format("%0${byteCount * 2}X", numb)
+				}
+			}
 		}
 		
 		bytes.array().eachByte(displayHex)
@@ -99,24 +112,33 @@ class HexxedStatus {
 		def i = 0
 		
 		def displayCharLine = {
-			outChar = outChar * 256 + it
-			if (byteCnt > 1) {
-				i++
-				if (i > 1) {
+			if (byteCnt == 1) {
+				outChar = it
+				if (outChar < 32 || outChar == 127)
+					outChar = ' '
+				lineOut = lineOut + outChar
+			} else if (littleEndian) {
+				if (i++ == 0) {
+					outChar = it
+				} else {
+					outChar += it * 256
+					if (outChar < 32 || outChar == 127)
+						outChar = ' '
+					lineOut =lineOut + outChar
+					i = 0
+				}		
+			} else {
+				if (i++ == 0) {
+					outChar = it * 256
+				} else {
+					outChar += it
 					if (outChar < 32 || outChar == 127)
 						outChar = ' '
 					lineOut = lineOut + outChar
 					i = 0
-					outChar = '\0'
 				}
-			} else {
-				if (outChar< 32 || outChar == 127)
-					outChar = ' '
-				lineOut = lineOut + outChar
-				outChar = '\0'
 			}
 		}
-		
 		
 		def bytes = ByteBuffer.allocate(16)
 		def bytesRet = fileChan.read(bytes, position)

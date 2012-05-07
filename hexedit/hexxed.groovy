@@ -1,6 +1,7 @@
 package hexedit
 
 import java.nio.channels.FileChannel
+import java.nio.ByteOrder
 import java.awt.*
 
 
@@ -15,8 +16,15 @@ class HexxedStart
 		def hexxedFile			//Container
 	
 		hexxedStatus = HexxedStatus.currentStatus
-		hexxedStatus.setLittleEndian(littleEndian)
-		hexxedStatus.setBigEndian(bigEndian)
+		if (littleEndian == false && bigEndian == false) {
+			hexxedStatus.littleEndian = (ByteOrder.nativeOrder()
+				== ByteOrder.LITTLE_ENDIAN) ? true : false
+			hexxedStatus.bigEndian = !hexxedStatus.littleEndian
+		}
+		else {
+			hexxedStatus.setLittleEndian(littleEndian)
+			hexxedStatus.setBigEndian(bigEndian)
+		}
 		hexxedStatus.setBitWidth(bitWidth)
 		hexxedStatus.setUseBlocks(useBlocks)
 		hexxedStatus.setBlockSize(blockSize)
