@@ -25,7 +25,7 @@ class HexxedWindow {
 		swingWindow = swingBuilder.frame(title: "HEXXED", size: [x, y],
 			show: true) {
 			gridBagLayout()
-			//menu
+
 			menuBar() {
 				menu(text: "File", mnemonic: 'F'){
 					menuItem(text: "Load", mnemonic: 'L',
@@ -54,17 +54,44 @@ class HexxedWindow {
 						actionPerformed: { displayGPL() })
 				}
 			}
-			scrollPane() {
+			
+			scrollPane(constraints:gbc(gridx:0, gridy:0, 
+				gridwidth:20, gridheight:20,
+				fill:GridBagConstraints.BOTH,
+				anchor:GridBagConstraints.FIRST_LINE_START,
+				weightx:0.7, weighty:0.7)) {
 				tableHex = table() {visible:true}
 			}
-			scrollPane() {
+			scrollPane(constraints:gbc(gridx:GridBagConstraints.RELATIVE,
+				gridy:0, gridwidth:5, gridheight:20,
+				fill:GridBagConstraints.BOTH,
+				weightx:0.2, weighty:0.7)) {
 				tableChar = table() {visble: true}
 			}
 			tableHex.setModel(new HexxedTableModel(statusHolder))
 			tableChar.setModel(new HexxedCharTableModel(statusHolder))
+			
 		}
+			
+		swingBuilder.lookAndFeel("system")
+		tableHex.setFont(new Font("Monospaced", Font.PLAIN, 14))
+		
 		statusHolder.subscribeFileOpen(this)
 		statusHolder.subscribeBitWidth(this)
+	}
+	
+	void setColumnNames()
+	{
+		def tableModel = tableHex.getModel()
+		tableHex.createDefaultColumnsFromModel()
+		tableModel.colNames.eachWithIndex { name, i ->
+			tableHex.getColumnModel().getColumn(i).setHeaderValue(name)
+		}
+		def tableCharModel = tableChar.getModel()
+		tableChar.createDefaultColumnsFromModel()
+		tableCharModel.colNames.eachWithIndex {name, i ->
+			tableChar.getColumnModel().getColumn(i).setHeaderValue(name)
+		}
 	}
 	
 	void updateFO(def fileStatus)
@@ -73,15 +100,12 @@ class HexxedWindow {
 			swingWindow.title = statusHolder.fileName
 		else
 			swingWindow.title = "HEXXED"
+		setColumnNames()
 	}
 	
 	void updateBW(def bitWidth)
 	{
-		def tableModel = tableHex.getModel()
-		tableHex.createDefaultColumnsFromModel()
-		tableModel.colNames.eachWithIndex { name, i ->
-			tableHex.getColumnModel().getColumn(i).setHeaderValue(name)
-		}
+		setColumnNames()
 	}
 	
 	def chooseWidth()

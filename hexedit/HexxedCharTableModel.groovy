@@ -6,6 +6,7 @@ import javax.swing.event.TableModelEvent
 class HexxedCharTableModel extends AbstractTableModel {
 
 	def hexxedStatus
+	def colNames = ["Characters"]
 	
 	HexxedCharTableModel(def statusObject)
 	{
@@ -13,6 +14,7 @@ class HexxedCharTableModel extends AbstractTableModel {
 		hexxedStatus.subscribeBitWidth(this)
 		hexxedStatus.subscribeOffset(this)
 		hexxedStatus.subscribeFileOpen(this)
+		fireTableChanged(new TableModelEvent(this))
 	}
 	
 	int getRowCount()
@@ -20,7 +22,7 @@ class HexxedCharTableModel extends AbstractTableModel {
 		if (!hexxedStatus.fileOpen)
 			return 0
 		else
-			return 17
+			return 40
 	}
 	
 	int getColumnCount()
@@ -30,7 +32,10 @@ class HexxedCharTableModel extends AbstractTableModel {
 	
 	def getColumnName(def col)
 	{
-		return "Characters"
+		if (col >= getColumnCount())
+			return null
+		else
+			return colNames[col]
 	}
 	
 	def getValueAt(int row, int col)
@@ -45,8 +50,13 @@ class HexxedCharTableModel extends AbstractTableModel {
 		fireTableChanged(new TableModelEvent(this))
 	}
 	
-	void updateBW(def ignore)
+	void updateBW(def bitWidth)
 	{
+		if (bitWidth == 8)
+			colNames = ["Characters (UTF8)"]
+		else
+			colNames = ["Characters (16 bit Unicode)"]
+		
 		fireTableChanged(new TableModelEvent(this))
 	}
 	

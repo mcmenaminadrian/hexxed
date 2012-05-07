@@ -7,7 +7,7 @@ class HexxedTableModel extends AbstractTableModel {
 	
 	def hexxedStatus
 	def hexxedFile
-	def colNames = []
+	def colNames = ["Hex"]
 	
 	HexxedTableModel(def statusObject)
 	{
@@ -16,6 +16,7 @@ class HexxedTableModel extends AbstractTableModel {
 		hexxedStatus.subscribeBitWidth(this)
 		hexxedStatus.subscribeBlockSize(this)
 		hexxedStatus.subscribeFileOpen(this)
+		fireTableChanged(new TableModelEvent(this))
 	}
 	
 	int getRowCount()
@@ -23,7 +24,7 @@ class HexxedTableModel extends AbstractTableModel {
 		if (!hexxedStatus.fileOpen)
 			return 0
 		else	
-			return 17
+			return 40
 	}
 	
 	int getColumnCount()
@@ -38,15 +39,9 @@ class HexxedTableModel extends AbstractTableModel {
 		else
 			return 3
 	}
+
 	
-	def getValueAt(int row, int col)
-	{
-		if (row >= getRowCount() || col >= getColumnCount())
-			return null
-		return hexxedStatus.valueAt(row, col)
-	}
-	
-	void updateBW(def bitWidth)
+	def updateColumnNames(def bitWidth)
 	{
 		def skip = 1
 		colNames = ["Address"]
@@ -59,6 +54,18 @@ class HexxedTableModel extends AbstractTableModel {
 		(0 .. 15).step(skip) { i ->
 			colNames << String.format("%02X", i)
 		}
+	}
+		
+	def getValueAt(int row, int col)
+	{
+		if (row >= getRowCount() || col >= getColumnCount())
+			return null
+		return hexxedStatus.valueAt(row, col)
+	}
+	
+	void updateBW(def bitWidth)
+	{
+		updateColumnNames(bitWidth)
 		fireTableChanged(new TableModelEvent(this))
 	}
 	
@@ -82,6 +89,7 @@ class HexxedTableModel extends AbstractTableModel {
 	
 	void updateFO(def ignore)
 	{
+		updateColumnNames(hexxedStatus.bitWidth)
 		fireTableChanged(new TableModelEvent(this))
 	}
 	
