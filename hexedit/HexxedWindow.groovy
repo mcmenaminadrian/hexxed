@@ -14,6 +14,8 @@ class HexxedWindow {
 	def tableHex = null
 	def tableChar
 	def tableHexHeader
+	def menuNextBlock
+	def menuPrevBlock
 	
 	
 	HexxedWindow(def x, def y, def controller)
@@ -42,9 +44,9 @@ class HexxedWindow {
 						actionPerformed: { forward() })
 					menuItem(text: "Backwards", mnemonic: 'B',
 						actionPerformed: { backward() })
-					menuItem(text: "Next block", mnemonic: 'x',
+					menuNextBlock = menuItem(text: "Next block", mnemonic: 'x',
 						actionPerformed: { nextBlock() })
-					menuItem(text: "Previous block", mnemonic: 'P',
+					menuPrevBlock = menuItem(text: "Previous block", mnemonic: 'P',
 						actionPerformed: { previousBlock() })
 				}
 				menu(text: "About", mnemonic: 'A'){
@@ -75,9 +77,14 @@ class HexxedWindow {
 			
 		swingBuilder.lookAndFeel("system")
 		tableHex.setFont(new Font("Monospaced", Font.PLAIN, 12))
+		if (statusHolder.useBlocks == false) {
+			menuNextBlock.setEnabled(false)
+			menuPrevBlock.setEnabled(false)
+		}
 		
 		statusHolder.subscribeFileOpen(this)
 		statusHolder.subscribeBitWidth(this)
+		statusHolder.subscribeUseBlocks(this)
 	}
 	
 	void setAddressColour(Color color)
@@ -110,6 +117,12 @@ class HexxedWindow {
 		tableCharModel.colNames.eachWithIndex {name, i ->
 			tableChar.getColumnModel().getColumn(i).setHeaderValue(name)
 		}
+	}
+
+	void updateUB(def useBlocks)
+	{
+		menuNextBlock.setEnabled(useBlocks)
+		menuPrevBlock.setEnbaled(useBlocks)
 	}
 	
 	void updateFO(def fileStatus)
