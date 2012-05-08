@@ -59,7 +59,7 @@ class HexxedWindow {
 				gridwidth:20, gridheight:20,
 				fill:GridBagConstraints.BOTH,
 				anchor:GridBagConstraints.FIRST_LINE_START,
-				weightx:0.7, weighty:0.7)) {
+				weightx:0.8, weighty:0.7)) {
 				tableHex = table() {visible:true}
 			}
 			scrollPane(constraints:gbc(gridx:GridBagConstraints.RELATIVE,
@@ -74,10 +74,20 @@ class HexxedWindow {
 		}
 			
 		swingBuilder.lookAndFeel("system")
-		tableHex.setFont(new Font("Monospaced", Font.PLAIN, 14))
+		tableHex.setFont(new Font("Monospaced", Font.PLAIN, 12))
 		
 		statusHolder.subscribeFileOpen(this)
 		statusHolder.subscribeBitWidth(this)
+	}
+	
+	void setColumnWidths()
+	{
+		def tableModel = tableHex.getModel()
+		def colCount = tableModel.getColumnCount()
+		tableHex.getColumnModel().getColumn(0).setPreferredWidth(100)
+		for (i in 1 .. (colCount - 1)) {
+			tableHex.getColumnModel().getColumn(i).setPreferredWidth(20)
+		}
 	}
 	
 	void setColumnNames()
@@ -101,11 +111,13 @@ class HexxedWindow {
 		else
 			swingWindow.title = "HEXXED"
 		setColumnNames()
+		setColumnWidths()
 	}
 	
 	void updateBW(def bitWidth)
 	{
 		setColumnNames()
+		setColumnWidths()
 	}
 	
 	def chooseWidth()
