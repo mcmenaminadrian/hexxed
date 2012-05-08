@@ -16,7 +16,8 @@ class HexxedWindow {
 	def tableHexHeader
 	def menuNextBlock
 	def menuPrevBlock
-	
+	def menuUseBlock
+	def setBlockSizeMenu
 	
 	HexxedWindow(def x, def y, def controller)
 	{
@@ -38,12 +39,18 @@ class HexxedWindow {
 				menu(text: "Display", mnemonic: 'D'){
 					menuItem(text: "Set width", mnemonic: 'w',
 						actionPerformed: { chooseWidth() })
+					setBlockSizeMenu = menuItem(text: "Set block size",
+					mnemonic: 'z', actionPerformed: { chooseBlockSize() })
 				}
 				menu(text: "Navigate", mnemonic: 'N'){
 					menuItem(text: "Forwards", mnemonic: 'F',
 						actionPerformed: { forward() })
 					menuItem(text: "Backwards", mnemonic: 'B',
 						actionPerformed: { backward() })
+					separator(){}
+					menuUseBlock = checkBoxMenuItem(text: "Use block",
+						mnemonic: 'U',
+						actionPerformed: { toggleBlockUse() })
 					menuNextBlock = menuItem(text: "Next block", mnemonic: 'x',
 						actionPerformed: { nextBlock() })
 					menuPrevBlock = menuItem(text: "Previous block", mnemonic: 'P',
@@ -80,6 +87,10 @@ class HexxedWindow {
 		if (statusHolder.useBlocks == false) {
 			menuNextBlock.setEnabled(false)
 			menuPrevBlock.setEnabled(false)
+			setBlockSizeMenu.setEnabled(false)
+			menuUseBlock.setSelected(false)
+		} else {
+			menuUseBlock.setSelected(true)
 		}
 		
 		statusHolder.subscribeFileOpen(this)
@@ -122,7 +133,8 @@ class HexxedWindow {
 	void updateUB(def useBlocks)
 	{
 		menuNextBlock.setEnabled(useBlocks)
-		menuPrevBlock.setEnbaled(useBlocks)
+		menuPrevBlock.setEnabled(useBlocks)
+		setBlockSizeMenu.setEnabled(useBlocks)
 	}
 	
 	void updateFO(def fileStatus)
@@ -176,6 +188,23 @@ class HexxedWindow {
 		
 	}
 	
+	def chooseBlockSize()
+	{
+		
+		def blockSizeDialog = swingBuilder.optionPane()
+		def retVal = blockSizeDialog.showInputDialog(null,
+			"", "Set Block Size", JOptionPane.INFORMATION_MESSAGE,
+			null, null, statusHolder.blockSize)
+
+		def numb = retVal as Integer
+		if (numb <= 16) {
+			statusHolder.setUseBlocks(false)
+			statusHolder.setBlockSize(0)
+		} else {
+			statusHolder.setBlockSize(numb)
+		}
+	}
+	
 	void setBitWidth()
 	{
 		def i = 4
@@ -184,6 +213,16 @@ class HexxedWindow {
 			if (it.isSelected()) {
 				statusHolder.setBitWidth(i)
 			}
+		}
+	}
+	
+	def toggleBlockUse(def menuBlockItem)
+	{
+		if (statusHolder.useBlocks == false) {
+			statusHolder.setUseBlocks(true)
+			chooseBlockSize()
+		} else {
+			statusHolder.setUseBlocks(false)
 		}
 	}
 	
@@ -212,10 +251,22 @@ class HexxedWindow {
 	}
 	
 	def nextBlock()
-	{}
+	{
+		def position = statusHolder.offset
+		position += statusHolder.blockSize
+		def multi = (position / statusHolder.blockSize) as Integer
+		statusHolder.setOffset(multi * statusHolder.blockSize) 	
+	}
 	
 	def previousBlock()
-	{}
+	{
+		def position = statusHolder.offset
+		position -= statusHolder.blockSize
+		if (position < 0)
+			position = 0
+		def multi = (position / statusHolder.blockSize) as Integer
+		statusHolder.setOffset(multi * statusHolder.blockSize)
+	}
 	
 	def helpMenu()
 	{}

@@ -189,7 +189,8 @@ class HexxedStatus {
 	void setBlockSize(def bs)
 	{
 		blockSize = bs
-		notifyBS(subscribersBlockSize)
+		if (useBlocks)
+			notifyBS(subscribersBlockSize)
 	}
 	
 	void setWindowEdit(def we)
