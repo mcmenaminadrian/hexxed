@@ -4,8 +4,9 @@ import groovy.swing.SwingBuilder
 import javax.swing.*
 import javax.swing.table.*
 import java.awt.*
+import java.awt.event.*
 
-class HexxedWindow {
+class HexxedWindow implements FocusListener{
 
 	def swingWindow
 	def swingBuilder
@@ -18,6 +19,7 @@ class HexxedWindow {
 	def menuPrevBlock
 	def menuUseBlock
 	def setBlockSizeMenu
+	def hexxedKeyListener
 	def leMenu
 	def beMenu
 	
@@ -113,8 +115,22 @@ class HexxedWindow {
 		statusHolder.subscribeFileOpen(this)
 		statusHolder.subscribeBitWidth(this)
 		statusHolder.subscribeUseBlocks(this)
+		
+		swingWindow.addFocusListener(this)
+		swingWindow.setFocusable(true)
+	}
+
+	void focusGained(FocusEvent e)
+	{
+		hexxedKeyListener = new HexxedKeyListener()
+		swingWindow.addKeyListener(hexxedKeyListener)
 	}
 	
+	void focusLost(FocusEvent e)
+	{
+		swingWindow.removeKeyListener(hexxedKeyListener)
+	}
+		
 	void setAddressColour(Color color)
 	{
 		def columnRenderer = new HexxedAddressColumn()
