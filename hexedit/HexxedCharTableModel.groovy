@@ -14,6 +14,7 @@ class HexxedCharTableModel extends AbstractTableModel {
 		hexxedStatus.subscribeBitWidth(this)
 		hexxedStatus.subscribeOffset(this)
 		hexxedStatus.subscribeFileOpen(this)
+		hexxedStatus.subscribeLittleEndian(this)
 		fireTableChanged(new TableModelEvent(this))
 	}
 	
@@ -50,6 +51,11 @@ class HexxedCharTableModel extends AbstractTableModel {
 		fireTableChanged(new TableModelEvent(this))
 	}
 	
+	void updateLE(def ignore)
+	{
+		fireTableChanged(new TableModelEvent(this))
+	}
+		
 	void updateBW(def bitWidth)
 	{
 		if (bitWidth == 8)

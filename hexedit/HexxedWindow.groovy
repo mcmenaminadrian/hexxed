@@ -18,6 +18,8 @@ class HexxedWindow {
 	def menuPrevBlock
 	def menuUseBlock
 	def setBlockSizeMenu
+	def leMenu
+	def beMenu
 	
 	HexxedWindow(def x, def y, def controller)
 	{
@@ -39,8 +41,12 @@ class HexxedWindow {
 				menu(text: "Display", mnemonic: 'D'){
 					menuItem(text: "Set width", mnemonic: 'w',
 						actionPerformed: { chooseWidth() })
+					separator()
 					setBlockSizeMenu = menuItem(text: "Set block size",
 					mnemonic: 'z', actionPerformed: { chooseBlockSize() })
+					separator()
+					leMenu = radioButtonMenuItem(text: "Little Endian")
+					beMenu = radioButtonMenuItem(text: "Big Endian")
 				}
 				menu(text: "Navigate", mnemonic: 'N'){
 					menuItem(text: "Forwards", mnemonic: 'F',
@@ -79,6 +85,17 @@ class HexxedWindow {
 			}
 			tableHex.setModel(new HexxedTableModel(statusHolder))
 			tableChar.setModel(new HexxedCharTableModel(statusHolder))
+			
+			def endianGroup = buttonGroup(id: "Endianness")
+			endianGroup.add(leMenu)
+			endianGroup.add(beMenu)
+			if (statusHolder.littleEndian) {
+				leMenu.selected = true
+			} else {
+				beMenu.selected = true
+			}
+			leMenu.actionPerformed = {toggleEndian()}
+			beMenu.actionPerformed = {toggleEndian()}
 			
 		}
 			
@@ -224,6 +241,13 @@ class HexxedWindow {
 		} else {
 			statusHolder.setUseBlocks(false)
 		}
+	}
+	
+	def toggleEndian()
+	{
+		def toggle = statusHolder.littleEndian
+		statusHolder.setLittleEndian(!toggle)
+		statusHolder.setBigEndian(toggle)
 	}
 	
 	def loadFile()
