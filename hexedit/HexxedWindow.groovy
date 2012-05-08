@@ -80,6 +80,14 @@ class HexxedWindow {
 		statusHolder.subscribeBitWidth(this)
 	}
 	
+	void setAddressColour(Color color)
+	{
+		def columnRenderer = new HexxedAddressColumn()
+		tableHex.getColumnModel().getColumn(0).setCellRenderer(columnRenderer)
+		columnRenderer.setOpaque(true)
+		columnRenderer.setBackground(color)
+	}
+	
 	void setColumnWidths()
 	{
 		def tableModel = tableHex.getModel()
@@ -112,12 +120,14 @@ class HexxedWindow {
 			swingWindow.title = "HEXXED"
 		setColumnNames()
 		setColumnWidths()
+		setAddressColour(Color.YELLOW)
 	}
 	
 	void updateBW(def bitWidth)
 	{
 		setColumnNames()
 		setColumnWidths()
+		setAddressColour(Color.YELLOW)
 	}
 	
 	def chooseWidth()
