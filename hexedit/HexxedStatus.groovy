@@ -40,7 +40,7 @@ class HexxedStatus {
 			if (useBlocks) {
 				def decBlock = (position / blockSize) as Integer
 				def blockCnt = String.format("%08X", decBlock)
-				def offCnt = String.format("%04X", offset % blockSize)
+				def offCnt = String.format("%04X", position % blockSize)
 				return "$blockCnt:$offCnt"
 			} else
 				return String.format("%08X", position)
