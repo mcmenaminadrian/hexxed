@@ -6,7 +6,7 @@ import javax.swing.table.*
 import java.awt.*
 import java.awt.event.*
 
-class HexxedWindow implements FocusListener{
+class HexxedWindow {
 
 	def swingWindow
 	def swingBuilder
@@ -22,6 +22,7 @@ class HexxedWindow implements FocusListener{
 	def hexxedKeyListener
 	def leMenu
 	def beMenu
+	def tablePanel
 	
 	HexxedWindow(def x, def y, def controller)
 	{
@@ -72,7 +73,7 @@ class HexxedWindow implements FocusListener{
 				}
 			}
 			
-			scrollPane(constraints:gbc(gridx:0, gridy:0, 
+			tablePanel = scrollPane(constraints:gbc(gridx:0, gridy:0, 
 				gridwidth:20, gridheight:20,
 				fill:GridBagConstraints.BOTH,
 				anchor:GridBagConstraints.FIRST_LINE_START,
@@ -116,19 +117,8 @@ class HexxedWindow implements FocusListener{
 		statusHolder.subscribeBitWidth(this)
 		statusHolder.subscribeUseBlocks(this)
 		
-		swingWindow.addFocusListener(this)
-		swingWindow.setFocusable(true)
-	}
-
-	void focusGained(FocusEvent e)
-	{
-		hexxedKeyListener = new HexxedKeyListener()
-		swingWindow.addKeyListener(hexxedKeyListener)
-	}
-	
-	void focusLost(FocusEvent e)
-	{
-		swingWindow.removeKeyListener(hexxedKeyListener)
+		tableHex.getInputMap().put(KeyStroke.getKeyStroke("SPACE"), "Backwards")
+		tableHex.getActionMap().put("Backwards", new HexxedBackAction(this))
 	}
 		
 	void setAddressColour(Color color)
