@@ -117,8 +117,12 @@ class HexxedWindow {
 		statusHolder.subscribeBitWidth(this)
 		statusHolder.subscribeUseBlocks(this)
 		
-		tableHex.getInputMap().put(KeyStroke.getKeyStroke("SPACE"), "Backwards")
-		tableHex.getActionMap().put("Backwards", new HexxedBackAction(this))
+		tableHex.getInputMap().put(KeyStroke.getKeyStroke("Z"), "Backwards")
+		tableHex.getInputMap().put(KeyStroke.getKeyStroke("X"), "Forwards")
+		tableHex.getActionMap().put("Backwards", new HexxedBackAction(this,
+			HexxedConstants.BACKWARDS))
+		tableHex.getActionMap().put("Forwards", new HexxedBackAction(this,
+			HexxedConstants.FORWARDS))
 	}
 		
 	void setAddressColour(Color color)
