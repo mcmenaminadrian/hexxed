@@ -26,6 +26,12 @@ class HexxedViAction extends AbstractAction {
 		count = 0
 		counting = false
 	}
+	
+	void updateCount(def add)
+	{
+		counting = true
+		count = count * 10 + add
+	}
 
 	void actionPerformed(ActionEvent e)
 	{
@@ -37,6 +43,15 @@ class HexxedViAction extends AbstractAction {
 			case HexxedConstants.COMMAND_MODE:
 				resetCount()
 				windowHexxed.forward()
+				break
+			case HexxedConstants.END:
+				if (counting)
+					statusHolder.offset = 16 * count
+				else
+					if (statusHolder.fileChan)
+						statusHolder.offset =
+							statusHolder.fileChan.size() & 0xFFFFFFFFFFFFFFF0
+				resetCount()
 				break
 			case HexxedConstants.DOWN_LINE:
 				if (counting)
@@ -53,48 +68,37 @@ class HexxedViAction extends AbstractAction {
 				resetCount()
 				break
 			case HexxedConstants.ONE:
-				counting = true
-				count = count * 10 + 1
+				updateCount(1)
 				break
 			case HexxedConstants.TWO:
-				counting = true
-				count = count * 10 + 2
+				updateCount(2)
 				break
 			case HexxedConstants.THREE:
-				counting = true
-				count = count * 10 + 3
+				updateCount(3)
 				break
 			case HexxedConstants.FOUR:
-				counting = true
-				count = count * 10 + 4
+				updateCount(4)
 				break
 			case HexxedConstants.FIVE:
-				counting = true
-				count = count * 10 + 5
+				updateCount(5)
 				break
 			case HexxedConstants.SIX:
-				counting = true
-				count = count * 10 + 6
+				updateCount(6)
 				break
 			case HexxedConstants.SEVEN:
-				counting = true
-				count = count * 10 + 7
+				updateCount(7)
 				break
 			case HexxedConstants.EIGHT:
-				counting = true
-				count = count * 10 + 8
+				updateCount(8)
 				break
 			case HexxedConstants.NINE:
-				counting = true
-				count = count * 10 + 9
+				updateCount(9)
 				break
 			case HexxedConstants.ZERO:
-				counting = true
-				count = count * 10
+				updateCount(0)
 				break;
 			default:
-				counting = false
-				count = 0
+				resetCount()
 		}
 	}
 }
