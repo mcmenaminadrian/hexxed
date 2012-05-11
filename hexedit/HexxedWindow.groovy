@@ -119,11 +119,13 @@ class HexxedWindow {
 		statusHolder.subscribeUseBlocks(this)
 		
 		
-		commandMap = ['ESC':"VI_MODE", ';':"COMMAND_MODE", 'G':"END"]
+		commandMap = ['ESC':"VI_MODE", ';':"COMMAND_MODE", 'G':"END",
+			"K":"UP_LINE", "J":"DOWN_LINE"]
 		
 		commandMap.each() { k, v ->
 			tableHex.getInputMap().put(KeyStroke.getKeyStroke(k), "$v")
-			tableHex.getActionMap().put("$v", new HexxedViAction(this, HexxedConstants."$v"))
+			tableHex.getActionMap().put("$v",
+				new HexxedViAction(this, statusHolder, HexxedConstants."$v"))
 		}
 
 	}

@@ -9,6 +9,7 @@ class HexxedTableModel extends AbstractTableModel {
 	def hexxedFile
 	def colNames = ["Hex"]
 	
+	
 	HexxedTableModel(def statusObject)
 	{
 		hexxedStatus = statusObject
@@ -24,8 +25,14 @@ class HexxedTableModel extends AbstractTableModel {
 	{
 		if (!hexxedStatus.fileOpen)
 			return 0
-		else	
-			return 40
+		else
+		{
+			def max = hexxedStatus.fileChan.size() - 1
+			if (max >= hexxedStatus.offset + HexxedConstants.ROWMAX * 16)
+				return HexxedConstants.ROWMAX
+			else 
+				return Math.ceil(((max - hexxedStatus.offset)/16)) as Integer
+			}	
 	}
 	
 	int getColumnCount()
@@ -61,7 +68,17 @@ class HexxedTableModel extends AbstractTableModel {
 	{
 		if (row >= getRowCount() || col >= getColumnCount())
 			return null
-		return hexxedStatus.valueAt(row, col)
+		def val
+		try {
+			val = hexxedStatus.valueAt(row, col)
+		}
+		catch (IOException e)
+		{
+			if (e.getMessage() != "EOF")
+				throw e
+			return " "
+		}
+		return val
 	}
 	
 	void updateBW(def bitWidth)

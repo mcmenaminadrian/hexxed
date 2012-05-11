@@ -21,9 +21,15 @@ class HexxedCharTableModel extends AbstractTableModel {
 	int getRowCount()
 	{
 		if (!hexxedStatus.fileOpen)
-			return 0
+		return 0
+	else
+	{
+		def max = hexxedStatus.fileChan.size() - 1
+		if (max >= hexxedStatus.offset + HexxedConstants.ROWMAX * 16)
+			return HexxedConstants.ROWMAX
 		else
-			return 40
+			return Math.ceil(((max - hexxedStatus.offset)/16)) as Integer
+		}
 	}
 	
 	int getColumnCount()
@@ -41,9 +47,17 @@ class HexxedCharTableModel extends AbstractTableModel {
 	
 	def getValueAt(int row, int col)
 	{
+		def val
 		if (col >= getColumnCount() || row >= getRowCount())
 			return null
-		return hexxedStatus.stringAt(row)
+		try {
+			val = hexxedStatus.stringAt(row)
+		}
+		catch (IOException e) {
+			if (e.getMessage() != "EOF")
+				throw e
+		}
+		return val
 	}
 	
 	void updateOff(def ignore)

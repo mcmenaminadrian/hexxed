@@ -34,6 +34,8 @@ class HexxedStatus {
 	
 	def valueAt(def row, def col)
 	{
+		if (!fileChan)
+			return null
 		def position = offset + row * 16
 		if (col == 0) {
 			//return address
@@ -45,9 +47,6 @@ class HexxedStatus {
 			} else
 				return String.format("%08X", position)
 		}
-		
-		if (!fileChan)
-			return
 		
 		def byteCount = 1
 		if (bitWidth == 8)
@@ -66,11 +65,9 @@ class HexxedStatus {
 		}
 		
 		def bytes = ByteBuffer.allocate(byteCount)
-		def bytesRet = fileChan.read(bytes, position)
-		if (bytesRet != byteCount) {
-			println "Could not read from file channel"
-			throw new IIOException()
-		}
+		def bytesRet = fileChan.read(bytes, position as Integer)
+		if (bytesRet == 0)
+			throw new IOException("EOF")
 		
 		def littleEndianNumb = []
 		def outStr = ""
@@ -106,6 +103,8 @@ class HexxedStatus {
 			return null
 		
 		def position = offset + row * 16	
+		if (position > fileChan.size())
+			throw new IOException("EOF")
 		def byteCnt = (bitWidth == 8) ? 1 : 2
 		def lineOut = ""
 		char outChar = '\0'
@@ -141,17 +140,19 @@ class HexxedStatus {
 		}
 		
 		def bytes = ByteBuffer.allocate(16)
-		def bytesRet = fileChan.read(bytes, position)
-		if (bytesRet != 16) {
-			println "Could not read from file channel"
-			throw new IIOException()
-		}
+		def bytesRet = fileChan.read(bytes, position as Integer)
+		if (bytesRet == 0)
+			return
 		
 		bytes.array().eachByte(displayCharLine)
 		return lineOut
 	}
 	void setOffset(def off)
 	{
+		if (fileChan && off >= fileChan.size())
+			off = ((fileChan.size() - 1) & 0xFFFFFFFFFFFFFFF0) as Integer
+		if (off < 0)
+			off = 0
 		offset = off
 		notifyOffset(subscribersOffset)
 	}
