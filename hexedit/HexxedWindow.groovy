@@ -24,6 +24,7 @@ class HexxedWindow {
 	def beMenu
 	def tablePanel
 	def commandMap = [:]
+	def shiftCommandMap = [:]
 	
 	HexxedWindow(def x, def y, def controller)
 	{
@@ -122,7 +123,12 @@ class HexxedWindow {
 		commandMap = ["ESC":"VI_MODE", ";":"COMMAND_MODE", 'G':"END",
 			"K":"UP_LINE", "J":"DOWN_LINE", "1":"ONE", "2":"TWO", "3":"THREE",
 			"4":"FOUR", "5":"FIVE", "6":"SIX", "7":"SEVEN", "8":"EIGHT",
-			"9":"NINE", "0":"ZERO"]
+			"9":"NINE", "0":"ZERO", "OPEN_BRACKET":"BACK_SCREEN",
+			"CLOSE_BRACKET":"NEXT_SCREEN"]
+		
+		shiftCommandMap = ["VK_OPEN_BRACKET":"BACK_BLOCK",
+			"VK_CLOSE_BRACKET":"NEXT_BLOCK"]
+	
 		
 		
 		commandMap.each() { k, v ->
@@ -130,7 +136,13 @@ class HexxedWindow {
 			tableHex.getActionMap().put("$v",
 				new HexxedViAction(this, statusHolder, HexxedConstants."$v"))
 		}
-
+		
+		shiftCommandMap.each { k, v ->
+			def key = KeyStroke.getKeyStroke(KeyEvent."$k", Event.SHIFT_MASK)
+			tableHex.getInputMap().put(key, "$v")
+			tableHex.getActionMap().put("$v",
+				new HexxedViAction(this, statusHolder, HexxedConstants."$v"))
+		}
 	}
 		
 	void setAddressColour(Color color)

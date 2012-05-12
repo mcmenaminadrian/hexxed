@@ -9,6 +9,10 @@ class HexxedConstants {
 	
 	static def UP_LINE = 1000
 	static def DOWN_LINE = 1001
+	static def BACK_BLOCK = 1002
+	static def NEXT_BLOCK = 1003
+	static def BACK_SCREEN = 1004
+	static def NEXT_SCREEN = 1005
 	
 	static def ONE = 5001
 	static def TWO = 5002

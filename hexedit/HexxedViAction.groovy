@@ -46,7 +46,7 @@ class HexxedViAction extends AbstractAction {
 				break
 			case HexxedConstants.END:
 				if (counting)
-					statusHolder.offset = 16 * count
+					statusHolder.offset = 16 * (count - 1)
 				else
 					if (statusHolder.fileChan)
 						statusHolder.offset =
@@ -65,6 +65,35 @@ class HexxedViAction extends AbstractAction {
 					statusHolder.offset -= 16 * count
 				else
 					statusHolder.offset -= 16
+				resetCount()
+				break
+			case HexxedConstants.BACK_BLOCK:
+			case HexxedConstants.NEXT_BLOCK:
+				if (statusHolder.useBlocks) {
+					def noblocks = 1
+					def position = statusHolder.offset
+					if (counting)
+						noblocks = count
+					if (typeAction == HexxedConstants.BACK_BLOCK)
+						position -= statusHolder.blockSize * noblocks
+					else
+						position += statusHolder.blockSize * noblocks
+					def multi = (position / statusHolder.blockSize) as Integer
+					statusHolder.setOffset(multi * statusHolder.blockSize)
+				}
+				resetCount()
+				break
+			case HexxedConstants.BACK_SCREEN:
+			case HexxedConstants.NEXT_SCREEN:
+				def noscreens = 1
+				def position = statusHolder.offset
+				if (counting)
+					noscreens = count
+				if (typeAction == HexxedConstants.BACK_SCREEN)
+					position -= HexxedConstants.ROWMAX * noscreens
+				else
+					position += HexxedConstants.ROWMAX * noscreens
+				statusHolder.setOffset(position)
 				resetCount()
 				break
 			case HexxedConstants.ONE:
