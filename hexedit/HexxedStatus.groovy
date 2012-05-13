@@ -24,6 +24,8 @@ class HexxedStatus {
 	def fileChan
 	def editMode
 	def undoList = []
+	def usingTempFile = false
+	def tempFile
 	
 	def subscribersLittleEndian = []
 	def subscribersBigEndian = []
@@ -46,22 +48,31 @@ class HexxedStatus {
 	boolean setValueAt(def value, def row, def col)
 	{
 		//is value a valid hex number?
-		def bytes = 1
+		def nibbles = 2
 		if (bitWidth == 16)
-			bytes = 2
+			nibbles = 4
 		else if (bitWidth == 32)
-			bytes = 4
+			nibbles = 8
 		else if (bitWidth == 64)
-			bytes = 8
+			nibbles = 16
 		
-		boolean isHex = value.matches("[0-9A-Fa-f]{$bytes}")
+		boolean isHex = value.matches("[0-9A-Fa-f]{$nibbles}")
 		if (!isHex) {
 			println "Edits must be Hex and match bit width"
 			undoList.pop()
 			return false
 		}
 		//create a temporary file if we have not done so already
-		
+		//this stores a copy of the unchanged file if we don't save changes
+		if (usingTempFile == false) {
+			 def tempFileObj = File.createTempFile(fileChan.toString(), null)
+			 def outStream = new FileOutputStream(tempFileObj)
+			 def tempFileChan = outStream.getChannel()
+			 fileChan.transferTo(0, fileChan.size(), tempFileChan)
+			 tempFile = tempFileObj.getPath()
+			 outStream.close()
+			 println "Temporary file written to $tempFile"
+		}
 	}
 	
 	def valueAt(def row, def col)
@@ -199,6 +210,7 @@ class HexxedStatus {
 	void setFileOpen(def fo)
 	{
 		fileOpen = fo
+		usingTempFile = false
 		notifyFO(subscribersFileOpen)
 	}
 	
