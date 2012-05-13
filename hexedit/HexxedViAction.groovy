@@ -40,7 +40,8 @@ class HexxedViAction extends AbstractAction {
 	void returnToViMode()
 	{
 		//kill edit mode binding
-		windowHexxed.tableHex.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), null)
+		windowHexxed.tableHex.getInputMap().put(
+			KeyStroke.getKeyStroke("ESCAPE"), null)
 		windowHexxed.tableHex.getActionMap().put("RETURN_VI_MODE", null)
 		//add back old bindings
 		windowHexxed.commandMap.each() { k, v ->
@@ -77,7 +78,7 @@ class HexxedViAction extends AbstractAction {
 		windowHexxed.tableHex.getInputMap().put(
 			KeyStroke.getKeyStroke("ESCAPE"), "RETURN_VI_MODE")
 		windowHexxed.tableHex.getActionMap().put("RETURN_VI_MODE",
-			new HexxedViAction(this, statusHolder,
+			new HexxedViAction(windowHexxed, statusHolder,
 				HexxedConstants.RETURN_VI_MODE))
 	}
 
@@ -139,9 +140,9 @@ class HexxedViAction extends AbstractAction {
 				if (counting)
 					noscreens = count
 				if (typeAction == HexxedConstants.BACK_SCREEN)
-					position -= HexxedConstants.ROWMAX * noscreens
+					position -= HexxedConstants.ROWMAX * noscreens * 16
 				else
-					position += HexxedConstants.ROWMAX * noscreens
+					position += HexxedConstants.ROWMAX * noscreens * 16
 				statusHolder.setOffset(position)
 				resetCount()
 				break
