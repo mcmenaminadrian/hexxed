@@ -50,7 +50,6 @@ class HexxedTableModel extends AbstractTableModel {
 			return 3
 	}
 
-	
 	def updateColumnNames(def bitWidth)
 	{
 		def skip = 1
@@ -82,7 +81,15 @@ class HexxedTableModel extends AbstractTableModel {
 		}
 		return val
 	}
-	
+
+	void setValueAt(def value, int row, int col)
+	{
+		def oldValue = getValueAt(row, col)
+		hexxedStatus.storeUndo(oldValue, row, col)
+		if (hexxedStatus.setValueAt(value, row, col))
+			fireTableCellUpdated(row, col)
+	}
+		
 	boolean isCellEditable(int row, int col)
 	{
 		if (!inEditMode)

@@ -28,4 +28,7 @@ class HexxedConstants {
 	static def EIGHT = 5008
 	static def NINE = 5009
 	static def ZERO = 5010
+	
+	static def BIG_ENDIAN = 6000
+	static def LITTLE_ENDIAN = 6001
 }

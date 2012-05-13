@@ -23,6 +23,7 @@ class HexxedStatus {
 	def offset
 	def fileChan
 	def editMode
+	def undoList = []
 	
 	def subscribersLittleEndian = []
 	def subscribersBigEndian = []
@@ -33,6 +34,33 @@ class HexxedStatus {
 	def subscribersOffset = []
 	def subscribersFileName = []
 	def subscribersEditMode = []
+	
+	
+	def storeUndo(def val, def row, def col)
+	{
+		def address = offset + row * 16 + (col - 1)
+		def undoRecord = new UndoRecord(bitwidth, littleEndian, val, row, col,
+			address)
+		undoList << undoRecord
+	}
+	
+	boolean setValueAt(def value, def row, def col)
+	{
+		//is value a valid hex number?
+		def bytes = 1
+		if (bitWidth == 16)
+			bytes = 2
+		else if (bitWidth == 32)
+			bytes = 4
+		else if (bitWidth == 64)
+			bytes = 8
+		
+		boolean isHex = value.matches("[0-9A-Fa-f]{$bytes}")
+		if (!isHex) {
+			println "EPIC FAIL!!"
+			return false
+		}
+	}
 	
 	def valueAt(def row, def col)
 	{
