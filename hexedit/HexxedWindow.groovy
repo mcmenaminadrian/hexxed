@@ -25,6 +25,7 @@ class HexxedWindow {
 	def tablePanel
 	def commandMap = [:]
 	def shiftCommandMap = [:]
+	def ctrlCommandMap = [:]
 	
 	HexxedWindow(def x, def y, def controller)
 	{
@@ -120,16 +121,17 @@ class HexxedWindow {
 		statusHolder.subscribeUseBlocks(this)
 		
 		
-		commandMap = ["ESC":"VI_MODE", ";":"COMMAND_MODE", 'G':"END",
+		commandMap = ["ESCAPE":"VI_MODE", 'G':"END",
 			"K":"UP_LINE", "J":"DOWN_LINE", "1":"ONE", "2":"TWO", "3":"THREE",
 			"4":"FOUR", "5":"FIVE", "6":"SIX", "7":"SEVEN", "8":"EIGHT",
 			"9":"NINE", "0":"ZERO", "OPEN_BRACKET":"BACK_SCREEN",
-			"CLOSE_BRACKET":"NEXT_SCREEN"]
+			"CLOSE_BRACKET":"NEXT_SCREEN", "ENTER":"DOWN_LINE", "I":"EDIT"]
 		
 		shiftCommandMap = ["VK_OPEN_BRACKET":"BACK_BLOCK",
-			"VK_CLOSE_BRACKET":"NEXT_BLOCK"]
+			"VK_CLOSE_BRACKET":"NEXT_BLOCK", "VK_COLON":"COMMAND_MODE"]
 	
-		
+		ctrlCommandMap = ["VK_U":"HALFSCREEN_UP", "VK_D":"HALFSCREEN_DOWN",
+			"VK_B":"BACK_SCREEN", "VK_F":"NEXT_SCREEN"]
 		
 		commandMap.each() { k, v ->
 			tableHex.getInputMap().put(KeyStroke.getKeyStroke(k), "$v")
@@ -139,6 +141,13 @@ class HexxedWindow {
 		
 		shiftCommandMap.each { k, v ->
 			def key = KeyStroke.getKeyStroke(KeyEvent."$k", Event.SHIFT_MASK)
+			tableHex.getInputMap().put(key, "$v")
+			tableHex.getActionMap().put("$v",
+				new HexxedViAction(this, statusHolder, HexxedConstants."$v"))
+		}
+		
+		ctrlCommandMap.each { k, v ->
+			def key = KeyStroke.getKeyStroke(KeyEvent."$k", Event.CTRL_MASK)
 			tableHex.getInputMap().put(key, "$v")
 			tableHex.getActionMap().put("$v",
 				new HexxedViAction(this, statusHolder, HexxedConstants."$v"))

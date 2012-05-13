@@ -4,6 +4,8 @@ class HexxedConstants {
 	static def COMMAND_MODE = 0
 	static def VI_MODE  = 1
 	static def END = 2
+	static def EDIT = 3
+	static def RETURN_VI_MODE = 4
 	
 	static def ROWMAX = 40
 	
@@ -13,6 +15,8 @@ class HexxedConstants {
 	static def NEXT_BLOCK = 1003
 	static def BACK_SCREEN = 1004
 	static def NEXT_SCREEN = 1005
+	static def HALFSCREEN_UP = 1006
+	static def HALFSCREEN_DOWN = 1007
 	
 	static def ONE = 5001
 	static def TWO = 5002
