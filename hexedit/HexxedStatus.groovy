@@ -72,7 +72,32 @@ class HexxedStatus {
 			 tempFile = tempFileObj.getPath()
 			 outStream.close()
 			 println "Temporary file written to $tempFile"
+			 usingTempFile = true
 		}
+		
+		def bytes = ByteBuffer.allocate((nibbles / 2) as Integer)
+		def j = 0
+		def listVal = value.toList()
+		if (littleEndian) {
+			def i = listVal.size() - 1
+			while (i >= 0) {
+				byte le = Integer.parseInt(listVal[i], 16) +
+					16 * Integer.parseInt(listVal[i - 1], 16)
+				i -= 2
+				bytes.put(j++, le)
+			}
+		} else {
+			def i = 0
+			while (i <= listVal.size() - 1) {
+				byte be = Integer.parseInt(listVal[i + 1], 16) +
+					16 * Integer.parseInt(listVal[i], 16)
+				i += 2
+				bytes.put(j++, be)
+			}
+		}
+		def address = offset + row * 16 + (col - 1)
+		fileChan.write(bytes, address)
+		return true
 	}
 	
 	def valueAt(def row, def col)
