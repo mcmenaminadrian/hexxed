@@ -7,7 +7,8 @@ class HexxedTableModel extends AbstractTableModel {
 	
 	def hexxedStatus
 	def hexxedFile
-	def colNames = ["Hex"]
+	def colNames = []
+	def inEditMode = false
 	
 	
 	HexxedTableModel(def statusObject)
@@ -18,6 +19,7 @@ class HexxedTableModel extends AbstractTableModel {
 		hexxedStatus.subscribeBlockSize(this)
 		hexxedStatus.subscribeFileOpen(this)
 		hexxedStatus.subscribeLittleEndian(this)
+		hexxedStatus.subscribeEditMode(this)
 		fireTableChanged(new TableModelEvent(this))
 	}
 	
@@ -81,6 +83,16 @@ class HexxedTableModel extends AbstractTableModel {
 		return val
 	}
 	
+	boolean isCellEditable(int row, int col)
+	{
+		if (!inEditMode)
+			return false
+		if (col == 0)
+			return false
+		else
+			return true
+	}
+	
 	void updateBW(def bitWidth)
 	{
 		updateColumnNames(bitWidth)
@@ -114,6 +126,11 @@ class HexxedTableModel extends AbstractTableModel {
 	{
 		updateColumnNames(hexxedStatus.bitWidth)
 		fireTableChanged(new TableModelEvent(this))
+	}
+	
+	void updateEM(def mode)
+	{
+		inEditMode = mode
 	}
 	
 }

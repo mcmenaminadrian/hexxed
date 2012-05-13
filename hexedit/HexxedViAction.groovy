@@ -39,6 +39,7 @@ class HexxedViAction extends AbstractAction {
 	
 	void returnToViMode()
 	{
+		statusHolder.setEditMode(false)
 		//kill edit mode binding
 		windowHexxed.tableHex.getInputMap().put(
 			KeyStroke.getKeyStroke("ESCAPE"), null)
@@ -80,6 +81,7 @@ class HexxedViAction extends AbstractAction {
 		windowHexxed.tableHex.getActionMap().put("RETURN_VI_MODE",
 			new HexxedViAction(windowHexxed, statusHolder,
 				HexxedConstants.RETURN_VI_MODE))
+		statusHolder.setEditMode(true)
 	}
 
 	void actionPerformed(ActionEvent e)

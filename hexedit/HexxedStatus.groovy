@@ -22,6 +22,7 @@ class HexxedStatus {
 	def fileName
 	def offset
 	def fileChan
+	def editMode
 	
 	def subscribersLittleEndian = []
 	def subscribersBigEndian = []
@@ -31,6 +32,7 @@ class HexxedStatus {
 	def subscribersFileOpen = []
 	def subscribersOffset = []
 	def subscribersFileName = []
+	def subscribersEditMode = []
 	
 	def valueAt(def row, def col)
 	{
@@ -147,6 +149,13 @@ class HexxedStatus {
 		bytes.array().eachByte(displayCharLine)
 		return lineOut
 	}
+	
+	void setEditMode(def mode)
+	{
+		editMode = mode
+		notifyEditMode(subscribersEditMode)
+	}
+	
 	void setOffset(def off)
 	{
 		if (fileChan && off >= fileChan.size())
@@ -204,6 +213,11 @@ class HexxedStatus {
 		notifyFN(subscribersFileName)
 	}
 	
+	void notifyEditMode(def listSubs)
+	{
+		listSubs.each {it.updateEM(editMode)}
+	}
+	
 	void notifyFN(def listSubs)
 	{
 		listSubs.each{it.updateFN()}
@@ -242,6 +256,17 @@ class HexxedStatus {
 	void notifyOffset(def listSubs)
 	{
 		listSubs.each{it.updateOff(offset)}
+	}
+	
+	void subscribeEditMode(def subscriber)
+	{
+		subscribersEditMode -= subscriber
+		subscribersEditMode << subscriber
+	}
+	
+	void unsubscribeEditMode(def subscriber)
+	{
+		subscribersEditMode -= subscriber
 	}
 	
 	void subscribeFileName(def subscriber)
