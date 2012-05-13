@@ -39,8 +39,7 @@ class HexxedStatus {
 	def storeUndo(def val, def row, def col)
 	{
 		def address = offset + row * 16 + (col - 1)
-		def undoRecord = new UndoRecord(bitwidth, littleEndian, val, row, col,
-			address)
+		def undoRecord = new UndoRecord(bitWidth, littleEndian, val, address)
 		undoList << undoRecord
 	}
 	
@@ -57,9 +56,12 @@ class HexxedStatus {
 		
 		boolean isHex = value.matches("[0-9A-Fa-f]{$bytes}")
 		if (!isHex) {
-			println "EPIC FAIL!!"
+			println "Edits must be Hex and match bit width"
+			undoList.pop()
 			return false
 		}
+		//create a temporary file if we have not done so already
+		
 	}
 	
 	def valueAt(def row, def col)
