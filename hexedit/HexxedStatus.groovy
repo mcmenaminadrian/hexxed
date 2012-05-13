@@ -26,6 +26,7 @@ class HexxedStatus {
 	def undoList = []
 	def usingTempFile = false
 	def tempFile
+	def holdingFileChan
 	
 	def subscribersLittleEndian = []
 	def subscribersBigEndian = []
@@ -66,11 +67,12 @@ class HexxedStatus {
 		//this stores a copy of the unchanged file if we don't save changes
 		if (usingTempFile == false) {
 			 def tempFileObj = File.createTempFile(fileChan.toString(), null)
-			 def outStream = new FileOutputStream(tempFileObj)
+			 def outStream = new RandomAccessFile(tempFileObj, "rw")
 			 def tempFileChan = outStream.getChannel()
 			 fileChan.transferTo(0, fileChan.size(), tempFileChan)
 			 tempFile = tempFileObj.getPath()
-			 outStream.close()
+			 holdingFileChan = fileChan
+			 fileChan = tempFileChan
 			 println "Temporary file written to $tempFile"
 			 usingTempFile = true
 		}
