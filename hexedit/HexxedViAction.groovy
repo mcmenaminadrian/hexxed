@@ -40,10 +40,13 @@ class HexxedViAction extends AbstractAction {
 	void returnToViMode()
 	{
 		statusHolder.setEditMode(false)
-		//kill edit mode binding
+		//kill edit mode bindings
 		windowHexxed.tableHex.getInputMap().put(
 			KeyStroke.getKeyStroke("ESCAPE"), null)
+		windowHexxed.tableHex.getInputMap().put(
+			KeyStroke.getKeyStroke("ENTER"), null)
 		windowHexxed.tableHex.getActionMap().put("RETURN_VI_MODE", null)
+		windowHexxed.tableHex.getActionMap().put("DOWN_LINE", null)
 		//add back old bindings
 		windowHexxed.commandMap.each() { k, v ->
 			windowHexxed.tableHex.getInputMap().put(KeyStroke.getKeyStroke(k),
@@ -81,6 +84,12 @@ class HexxedViAction extends AbstractAction {
 		windowHexxed.tableHex.getActionMap().put("RETURN_VI_MODE",
 			new HexxedViAction(windowHexxed, statusHolder,
 				HexxedConstants.RETURN_VI_MODE))
+		//add back DOWN_LINE
+		windowHexxed.tableHex.getInputMap().put(
+			KeyStroke.getKeyStroke("ENTER"), "DOWN_LINE")
+		windowHexxed.tableHex.getActionMap().put("DOWN_LINE",
+			new HexxedViAction(windowHexxed, statusHolder,
+				HexxedConstants.DOWN_LINE))
 		statusHolder.setEditMode(true)
 	}
 
