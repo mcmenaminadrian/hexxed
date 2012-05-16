@@ -26,6 +26,7 @@ class HexxedStatus {
 	def undoList = []
 	def usingTempFile = false
 	def tempFile
+	def tempFileObj
 	def holdingFileChan
 	
 	def subscribersLittleEndian = []
@@ -63,10 +64,11 @@ class HexxedStatus {
 			undoList.pop()
 			return false
 		}
+		
 		//create a temporary file if we have not done so already
 		//this stores a copy of the unchanged file if we don't save changes
 		if (usingTempFile == false) {
-			 def tempFileObj = File.createTempFile(fileChan.toString(), null)
+			 tempFileObj = File.createTempFile(fileChan.toString(), null)
 			 def outStream = new RandomAccessFile(tempFileObj, "rw")
 			 def tempFileChan = outStream.getChannel()
 			 fileChan.transferTo(0, fileChan.size(), tempFileChan)
@@ -100,6 +102,48 @@ class HexxedStatus {
 		def address = offset + row * 16 + (col - 1)
 		fileChan.write(bytes, address)
 		return true
+	}
+
+	
+	void writeFile()
+	{
+		if (!usingTempFile)
+			return //nothing to save
+		def backupFile
+		def backChannel
+		
+		//backup file
+		try {
+			backupFile = File.createTempFile("$fileName.bk", null)
+			def backStream = new RandomAccessFile(backupFile, "rw")
+			backChannel = backStream.getChannel()
+			holdingFileChan.transferTo(0, holdingFileChan.size(), backChannel)
+		}
+		catch (e) {
+			println "Exception $e"
+			println "Could not backup file - returning to old file"
+			fileChan = holdingFileChan
+			tempFileObj.close()
+			backupFile.close()
+			usingTempFile = false
+			return
+		}
+		
+		try {
+			holdingFileChan.truncate(0)
+			fileChan.transferTo(0, fileChan.size(), holdingFileChan)
+		}
+		catch (e)
+		{
+			println "Exception $e"
+			println
+				"Could not save edited file: backup in ${backupFile.getPath()}"
+		}
+		
+		fileChan = holdingFileChan
+		tempFileObj.close()
+		backupFile.close()
+		usingTempFile = false	
 	}
 	
 	def valueAt(def row, def col)
