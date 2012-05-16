@@ -18,9 +18,6 @@ class HexxedConstants {
 	static def HALFSCREEN_UP = 1006
 	static def HALFSCREEN_DOWN = 1007
 	
-	static def WRITE = 2000
-	static def QUIT = 2001
-	
 	static def ONE = 5001
 	static def TWO = 5002
 	static def THREE = 5003
