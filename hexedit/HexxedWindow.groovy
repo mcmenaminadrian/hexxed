@@ -5,6 +5,7 @@ import javax.swing.*
 import javax.swing.table.*
 import java.awt.*
 import java.awt.event.*
+import java.awt.event.InputEvent
 
 class HexxedWindow {
 
@@ -27,6 +28,7 @@ class HexxedWindow {
 	def commandMap = [:]
 	def shiftCommandMap = [:]
 	def ctrlCommandMap = [:]
+	def colonCommandMap = [:]
 	
 	HexxedWindow(def x, def y, def controller)
 	{
@@ -133,10 +135,12 @@ class HexxedWindow {
 			"CLOSE_BRACKET":"NEXT_SCREEN", "ENTER":"DOWN_LINE", "I":"EDIT"]
 		
 		shiftCommandMap = ["VK_OPEN_BRACKET":"BACK_BLOCK",
-			"VK_CLOSE_BRACKET":"NEXT_BLOCK", "VK_COLON":"COMMAND_MODE"]
+			"VK_CLOSE_BRACKET":"NEXT_BLOCK", "VK_SEMICOLON":"COMMAND_MODE"]
 	
 		ctrlCommandMap = ["VK_U":"HALFSCREEN_UP", "VK_D":"HALFSCREEN_DOWN",
 			"VK_B":"BACK_SCREEN", "VK_F":"NEXT_SCREEN"]
+		
+		colonCommandMap = ["W":"WRITE", "Q":"QUIT"]
 		
 		commandMap.each() { k, v ->
 			tableHex.getInputMap().put(KeyStroke.getKeyStroke(k), "$v")
@@ -145,14 +149,16 @@ class HexxedWindow {
 		}
 		
 		shiftCommandMap.each { k, v ->
-			def key = KeyStroke.getKeyStroke(KeyEvent."$k", Event.SHIFT_MASK)
+			def key = KeyStroke.getKeyStroke(KeyEvent."$k",
+				KeyEvent.SHIFT_DOWN_MASK)
 			tableHex.getInputMap().put(key, "$v")
 			tableHex.getActionMap().put("$v",
 				new HexxedViAction(this, statusHolder, HexxedConstants."$v"))
 		}
 		
 		ctrlCommandMap.each { k, v ->
-			def key = KeyStroke.getKeyStroke(KeyEvent."$k", Event.CTRL_MASK)
+			def key = KeyStroke.getKeyStroke(KeyEvent."$k",
+				KeyEvent.CTRL_DOWN_MASK)
 			tableHex.getInputMap().put(key, "$v")
 			tableHex.getActionMap().put("$v",
 				new HexxedViAction(this, statusHolder, HexxedConstants."$v"))
