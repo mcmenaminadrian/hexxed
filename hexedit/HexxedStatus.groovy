@@ -123,8 +123,6 @@ class HexxedStatus {
 			println "Exception $e"
 			println "Could not backup file - returning to old file"
 			fileChan = holdingFileChan
-			tempFileObj.close()
-			backupFile.close()
 			usingTempFile = false
 			return
 		}
@@ -141,8 +139,6 @@ class HexxedStatus {
 		}
 		
 		fileChan = holdingFileChan
-		tempFileObj.close()
-		backupFile.close()
 		usingTempFile = false	
 	}
 	
