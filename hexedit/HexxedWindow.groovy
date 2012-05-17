@@ -151,6 +151,8 @@ class HexxedWindow {
 		
 		colonCommandMap = ["W":"WRITE", "Q":"QUIT"]
 		
+	
+		
 		commandMap.each() { k, v ->
 			tableHex.getInputMap().put(KeyStroke.getKeyStroke(k), "$v")
 			tableHex.getActionMap().put("$v",

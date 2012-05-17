@@ -27,6 +27,8 @@ class HexxedStatus {
 	def usingTempFile = false
 	def tempFile
 	def holdingFileChan
+	def hexxedFile
+	static actionObject
 	
 	def subscribersLittleEndian = []
 	def subscribersBigEndian = []
@@ -37,6 +39,7 @@ class HexxedStatus {
 	def subscribersOffset = []
 	def subscribersFileName = []
 	def subscribersEditMode = []
+	def subscribersFileObj = []
 	
 	
 	def storeUndo(def val, def row, def col)
@@ -45,14 +48,37 @@ class HexxedStatus {
 		def undoRecord = new UndoRecord(bitWidth, littleEndian, val, address)
 		undoList << undoRecord
 	}
+
+	void badCommandString(def string)
+	{
+		windowEdit.commandTextStatus.append(
+			"Bad or not understood command: $string\n")
+	}
 	
-	void writeFile()
+	void cleanCommandLine()
+	{
+		windowEdit.commandTextLine.setEditable(false)
+		windowEdit.commandTextLine.setText("")
+		actionObject.returnToViModeFromCommand()
+	}
+	
+	void setupWriteFile(def actObject)
+	{
+		def pathToFile = fileName
+		actionObject = actObject
+		windowEdit.commandTextLine.setText(":w $pathToFile")
+		windowEdit.commandTextLine.addActionListener(new HexxedWriteFileAdapter(this))
+		windowEdit.commandTextLine.setEditable(true)
+	}
+		
+	void writeFile(def filePath)
 	{
 		if (!usingTempFile)
 			return //nothing to save
 		def backupFile
 		def backChannel
-		
+		if (filePath)
+			fileName = filePath
 		//backup file
 		try {
 			backupFile = File.createTempFile("$fileName.bk", null)
@@ -66,6 +92,7 @@ class HexxedStatus {
 				"Could not backup file - returning to old file")
 			fileChan = holdingFileChan
 			usingTempFile = false
+			cleanCommandLine()
 			return
 		}
 		
@@ -82,6 +109,7 @@ class HexxedStatus {
 		
 		fileChan = holdingFileChan
 		usingTempFile = false
+		cleanCommandLine()
 	}
 	
 	boolean setValueAt(def value, def row, def col)
@@ -258,6 +286,12 @@ class HexxedStatus {
 		return lineOut
 	}
 	
+	void setHexxedFile(def file)
+	{
+		hexxedFile = file
+		notifyFileObj(subscribersFileObj)
+	}
+	
 	void setEditMode(def mode)
 	{
 		editMode = mode
@@ -320,6 +354,11 @@ class HexxedStatus {
 	void changeFileName()
 	{
 		notifyFN(subscribersFileName)
+	}
+	
+	void notifyFileObj(def listSubs)
+	{
+		listSubs.each{it.updateFileObj(hexxedFile)}
 	}
 	
 	void notifyEditMode(def listSubs)
@@ -464,6 +503,17 @@ class HexxedStatus {
 	void unsubscribeOffset(def subscriber)
 	{
 		subscribersOffset -= subscriber
+	}
+	
+	void subscribeFileObj(def subscriber)
+	{
+		subscribersFileObj -=subscriber
+		subscribersFilObj << subscriber
+	}
+	
+	void unsubscribeFileObj(def subscriber)
+	{
+		susbcribersFileObj -= subscriber
 	}
 	
 }

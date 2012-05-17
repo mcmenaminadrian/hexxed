@@ -32,10 +32,13 @@ class HexxedStart
 		
 		hexxedWindow = new HexxedWindow(x, y, hexxedStatus)
 		hexxedStatus.setWindowEdit(hexxedWindow)
+	
+		
 		
 		hexxedFile = new HexxedFile(hexxedStatus)
 		if (fileToEdit)
 			hexxedFile.getNewFile(fileToEdit)
+		hexxedStatus.setHexxedFile(hexxedFile)
 	}
 
 }

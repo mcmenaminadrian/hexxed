@@ -131,8 +131,7 @@ class HexxedViAction extends AbstractAction {
 				setupCommandMode()
 				break
 			case HexxedConstants.WRITE:
-				statusHolder.writeFile()
-				returnToViModeFromCommand()
+				statusHolder.setupWriteFile(this)
 				break
 			case HexxedConstants.QUIT:
 				//abandon write
