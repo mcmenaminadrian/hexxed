@@ -46,6 +46,44 @@ class HexxedStatus {
 		undoList << undoRecord
 	}
 	
+	void writeFile()
+	{
+		if (!usingTempFile)
+			return //nothing to save
+		def backupFile
+		def backChannel
+		
+		//backup file
+		try {
+			backupFile = File.createTempFile("$fileName.bk", null)
+			def backStream = new RandomAccessFile(backupFile, "rw")
+			backChannel = backStream.getChannel()
+			holdingFileChan.transferTo(0, holdingFileChan.size(), backChannel)
+		}
+		catch (e) {
+			windowEdit.commandTextStatus.append("Exception $e\n")
+			windowEdit.commandTextStatus.append(
+				"Could not backup file - returning to old file")
+			fileChan = holdingFileChan
+			usingTempFile = false
+			return
+		}
+		
+		try {
+			holdingFileChan.truncate(0)
+			fileChan.transferTo(0, fileChan.size(), holdingFileChan)
+		}
+		catch (e)
+		{
+			windowEdit.commandTextStatus.append("Exception $e\n")
+			windowEdit.commandTextStatus.append(
+				"Could not save file: backup at ${backupFile.getPath()}")
+		}
+		
+		fileChan = holdingFileChan
+		usingTempFile = false
+	}
+	
 	boolean setValueAt(def value, def row, def col)
 	{
 		//is value a valid hex number?
