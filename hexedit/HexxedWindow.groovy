@@ -25,6 +25,7 @@ class HexxedWindow {
 	def beMenu
 	def tablePanel
 	def commandTextLine
+	def commandTextStatus
 	def commandMap = [:]
 	def shiftCommandMap = [:]
 	def ctrlCommandMap = [:]
@@ -81,20 +82,28 @@ class HexxedWindow {
 			
 			tablePanel = scrollPane(constraints:gbc(gridx:0, gridy:0, 
 				gridwidth:20, gridheight:20,
-				fill:GridBagConstraints.BOTH,
+				fill:BOTH,
 				anchor:GridBagConstraints.FIRST_LINE_START,
 				weightx:0.8, weighty:0.7)) {
 				tableHex = table() {visible:true}
 			}
 			scrollPane(constraints:gbc(gridx:GridBagConstraints.RELATIVE,
 				gridy:0, gridwidth:5, gridheight:20,
-				fill:GridBagConstraints.BOTH,
+				fill:BOTH,
 				weightx:0.2, weighty:0.7)) {
 				tableChar = table() {visble: true}}
 				
-			commandTextLine = textArea(
-				constraints:gbc(gridx:0, gridy:25, gridheight:1,
-					fill:GridBagConstraints.BOTH, weighty:0.05)){visible:true}
+			commandTextLine = textField(
+				constraints:gbc(gridx:0, gridy:30, gridheight:1, gridwidth:100,
+					fill:BOTH, weighty:0.01, weightx:0.75))
+					{visible:true}
+			commandTextLine.setEditable(false)
+			
+			scrollPane(constraints:gbc(gridx:0, gridy:32,gridheight:1,
+				gridwidth:100, fill:BOTH, weighty:0.1))
+					{commandTextStatus = textArea(){visble:true}}
+			
+			commandTextStatus.setEditable(false)
 
 			tableHex.setModel(new HexxedTableModel(statusHolder))
 			tableChar.setModel(new HexxedCharTableModel(statusHolder))

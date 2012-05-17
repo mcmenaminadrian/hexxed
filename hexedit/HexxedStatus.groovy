@@ -59,7 +59,8 @@ class HexxedStatus {
 		
 		boolean isHex = value.matches("[0-9A-Fa-f]{$nibbles}")
 		if (!isHex) {
-			println "Edits must be Hex and match bit width"
+			windowEdit.commandTextStatus.append(
+				"Failed: Edits must be hex format and match bit width\n")
 			undoList.pop()
 			return false
 		}
@@ -73,7 +74,8 @@ class HexxedStatus {
 			 tempFile = tempFileObj.getPath()
 			 holdingFileChan = fileChan
 			 fileChan = tempFileChan
-			 println "Temporary file written to $tempFile"
+			 windowEdit.commandTextStatus.append(
+				 "Temporary file written to $tempFile\n")
 			 usingTempFile = true
 		}
 		
