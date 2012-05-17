@@ -76,11 +76,21 @@ class HexxedViAction extends AbstractAction {
 	
 	void returnToViModeFromEdit()
 	{
-		statusHolder.editMode = false
+		statusHolder.setEditMode(false)
 		//kill edit mode binding
 		windowHexxed.tableHex.getInputMap().put(
 			KeyStroke.getKeyStroke("ESCAPE"), null)
 		windowHexxed.tableHex.getActionMap().put("RETURN_VI_MODE", null)
+		addOldBindings()
+	}
+	
+	void returnToViModeFromCommand()
+	{
+		windowHexxed.colonCommandMap.each{k, v ->
+			windowHexxed.tableHex.getInputMap().put(
+				KeyStroke.getKeyStroke("$k"), null)
+			windowHexxed.tableHex.getActionMap().put("$v", null)
+		}
 		addOldBindings()
 	}
 	
@@ -93,7 +103,7 @@ class HexxedViAction extends AbstractAction {
 		windowHexxed.tableHex.getActionMap().put("RETURN_VI_MODE",
 			new HexxedViAction(windowHexxed, statusHolder,
 				HexxedConstants.RETURN_VI_MODE))
-		statusHolder.editMode = true
+		statusHolder.setEditMode(true)
 	}
 	
 	void setupCommandMode()
@@ -122,6 +132,7 @@ class HexxedViAction extends AbstractAction {
 				break
 			case HexxedConstants.WRITE:
 				statusHolder.writeFile()
+				returnToViModeFromCommand()
 				break
 			case HexxedConstants.QUIT:
 				//abandon write
