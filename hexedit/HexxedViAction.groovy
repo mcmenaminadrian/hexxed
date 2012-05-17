@@ -117,6 +117,33 @@ class HexxedViAction extends AbstractAction {
 					HexxedConstants."$v"))
 		}
 	}
+	
+	void processEnter()
+	{
+		def actionString = windowHexxed.commandTextLine.getText()
+		if (actionString.size() == 0) {
+			statusHolder.cleanCommandLine()
+			return
+		}
+		
+		if (actionString[0] != ':') {
+			statusHolder.badCommandString(actionString)
+			statusHolder.cleanCommandLine()
+			return
+		}
+		
+		if (actionString[1] == 'w') {
+			actionString = actionString.minus(":w")
+			if (actionString.isAllWhitespace() || actionString.size() == 0) {
+				statusHolder.writeFile(null)
+			}
+			statusHolder.writeFile(actionString)
+			return
+		}
+		
+		statusHolder.badCommandString(actionString)
+		statusHolder.cleanCommandLine()
+	}
 
 	void actionPerformed(ActionEvent e)
 	{
@@ -135,6 +162,9 @@ class HexxedViAction extends AbstractAction {
 				break
 			case HexxedConstants.QUIT:
 				//abandon write
+				break
+			case HexxedConstants.DONE:
+				processEnter()
 				break
 			case HexxedConstants.END:
 				if (counting)

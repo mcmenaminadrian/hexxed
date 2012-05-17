@@ -149,7 +149,7 @@ class HexxedWindow {
 		ctrlCommandMap = ["VK_U":"HALFSCREEN_UP", "VK_D":"HALFSCREEN_DOWN",
 			"VK_B":"BACK_SCREEN", "VK_F":"NEXT_SCREEN"]
 		
-		colonCommandMap = ["W":"WRITE", "Q":"QUIT"]
+		colonCommandMap = ["W":"WRITE", "Q":"QUIT", "ENTER":"DONE"]
 		
 	
 		

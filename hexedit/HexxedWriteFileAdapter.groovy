@@ -16,7 +16,6 @@ class HexxedWriteFileAdapter implements ActionListener {
 	
 	void actionPerformed(ActionEvent e)
 	{
-		
 		def actionString = e.getActionCommand()
 		if (actionString.size() == 0) {
 			statusHolder.cleanCommandLine()

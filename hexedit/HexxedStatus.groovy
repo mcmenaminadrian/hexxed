@@ -81,7 +81,7 @@ class HexxedStatus {
 			fileName = filePath
 		//backup file
 		try {
-			backupFile = File.createTempFile("$fileName.bk", null)
+			backupFile = File.createTempFile("~~bCKUP", null)
 			def backStream = new RandomAccessFile(backupFile, "rw")
 			backChannel = backStream.getChannel()
 			holdingFileChan.transferTo(0, holdingFileChan.size(), backChannel)

@@ -20,6 +20,7 @@ class HexxedConstants {
 	
 	static def WRITE = 2000
 	static def QUIT = 2001
+	static def DONE = 2002
 	
 	static def ONE = 5001
 	static def TWO = 5002
