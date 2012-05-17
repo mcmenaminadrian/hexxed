@@ -100,9 +100,8 @@ class HexxedViAction extends AbstractAction {
 	{
 		removeOldBindings()
 		windowHexxed.colonCommandMap.each { k, v ->
-			def key = KeyStroke.getKeyStroke(KeyEvent."$k",
-				KeyEvent.CTRL_DOWN_MASK)
-			windowHexxed.tableHex.getInputMap().put(key, "$v")
+			windowHexxed.tableHex.getInputMap().put(
+				KeyStroke.getKeyStroke("$k"), "$v")
 			windowHexxed.tableHex.getActionMap().put("$v",
 				new HexxedViAction(windowHexxed, statusHolder,
 					HexxedConstants."$v"))
