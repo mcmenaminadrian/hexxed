@@ -139,11 +139,17 @@ class HexxedViAction extends AbstractAction {
 			}
 			statusHolder.writeFile(actionString)
 			return
+		} else (actionString[1] == 'q') {
+			actionString = actionString.minus(":q")
+			statusHolder.quitFile(actionString)
+			return
 		}
 		
 		statusHolder.badCommandString(actionString)
 		statusHolder.cleanCommandLine()
 	}
+	
+
 
 	void actionPerformed(ActionEvent e)
 	{
@@ -161,7 +167,7 @@ class HexxedViAction extends AbstractAction {
 				statusHolder.setupWriteFile(this)
 				break
 			case HexxedConstants.QUIT:
-				//abandon write
+				statusHolder.setupQuit(this)
 				break
 			case HexxedConstants.DONE:
 				processEnter()

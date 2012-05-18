@@ -33,6 +33,10 @@ class HexxedWriteFileAdapter implements ActionListener {
 			}
 			statusHolder.writeFile(actionString)
 			return
+		} else if (actionString[1] == 'q') {
+			actionString = actionString.minus(":q")
+			statusHolder.quitFile(actionString)
+			return
 		}
 		
 		statusHolder.badCommandString(actionString)

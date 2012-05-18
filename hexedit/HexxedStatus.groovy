@@ -67,8 +67,32 @@ class HexxedStatus {
 		def pathToFile = fileName
 		actionObject = actObject
 		windowEdit.commandTextLine.setText(":w $pathToFile")
-		windowEdit.commandTextLine.addActionListener(new HexxedWriteFileAdapter(this))
+		windowEdit.commandTextLine.addActionListener(
+			new HexxedWriteFileAdapter(this))
 		windowEdit.commandTextLine.setEditable(true)
+	}
+	
+	void setupQuit(def actObject)
+	{
+		actionObject = actObject
+		windowEdit.commandTextLine.setText(":q")
+		windowEdit.commandTextLine.addActionListener(
+			new HexxedWriteFileAdapter(this))
+		windowEdit.commandTextLine.setEditable(true)
+	}
+	
+	void quitFile(def commandString)
+	{
+		//TODO: handle non null strings
+		if (!fileOpen) {
+			cleanCommandLine()
+			return
+		}
+		fileChan.close()
+		hexxedFile.close()
+		setFileName(null)
+		setFileOpen(false)
+		cleanCommandLine()
 	}
 		
 	void writeFile(def filePath)
