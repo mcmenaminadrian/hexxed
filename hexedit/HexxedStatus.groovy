@@ -108,11 +108,13 @@ class HexxedStatus {
 			def backStream = new RandomAccessFile(backupFile, "rw")
 			backChannel = backStream.getChannel()
 			holdingFileChan.transferTo(0, holdingFileChan.size(), backChannel)
+			backChannel.close()
 		}
 		catch (e) {
 			windowEdit.commandTextStatus.append("Exception $e\n")
 			windowEdit.commandTextStatus.append(
 				"Could not backup file - returning to old file")
+			fileChan.close()
 			fileChan = holdingFileChan
 			usingTempFile = false
 			cleanCommandLine()
@@ -122,6 +124,8 @@ class HexxedStatus {
 		try {
 			holdingFileChan.truncate(0)
 			fileChan.transferTo(0, fileChan.size(), holdingFileChan)
+			fileChan.close()
+			backupFile.delete()
 		}
 		catch (e)
 		{
