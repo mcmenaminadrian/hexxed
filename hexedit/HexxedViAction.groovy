@@ -134,10 +134,10 @@ class HexxedViAction extends AbstractAction {
 		
 		if (actionString[1] == 'w') {
 			actionString = actionString.minus(":w")
-			if (actionString.isAllWhitespace() || actionString.size() == 0) {
+			if (actionString.isAllWhitespace() || actionString.size() == 0)
 				statusHolder.writeFile(null)
-			}
-			statusHolder.writeFile(actionString)
+			else
+				statusHolder.writeFile(actionString)
 			return
 		} else if (actionString[1] == 'q') {
 			actionString = actionString.minus(":q")
