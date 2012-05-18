@@ -139,7 +139,7 @@ class HexxedViAction extends AbstractAction {
 			}
 			statusHolder.writeFile(actionString)
 			return
-		} else (actionString[1] == 'q') {
+		} else if (actionString[1] == 'q') {
 			actionString = actionString.minus(":q")
 			statusHolder.quitFile(actionString)
 			return
@@ -148,8 +148,6 @@ class HexxedViAction extends AbstractAction {
 		statusHolder.badCommandString(actionString)
 		statusHolder.cleanCommandLine()
 	}
-	
-
 
 	void actionPerformed(ActionEvent e)
 	{

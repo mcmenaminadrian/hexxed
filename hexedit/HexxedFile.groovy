@@ -59,7 +59,6 @@ class HexxedFile {
 		super.finalize()
 		if (hexxedStatus.fileOpen) {
 			fileChan.close()
-			randomFile.close()
 			hexxedStatus.setFileOpen(false)
 		}
 	}

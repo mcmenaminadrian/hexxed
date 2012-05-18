@@ -89,7 +89,6 @@ class HexxedStatus {
 			return
 		}
 		fileChan.close()
-		hexxedFile.close()
 		setFileName(null)
 		setFileOpen(false)
 		cleanCommandLine()
