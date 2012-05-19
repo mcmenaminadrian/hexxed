@@ -216,9 +216,9 @@ class HexxedViAction extends AbstractAction {
 				if (counting)
 					noscreens = count
 				if (typeAction == HexxedConstants.BACK_SCREEN)
-					position -= HexxedConstants.ROWMAX * noscreens
+					position -= HexxedConstants.ROWMAX * noscreens * 16
 				else
-					position += HexxedConstants.ROWMAX * noscreens
+					position += HexxedConstants.ROWMAX * noscreens * 16
 				statusHolder.setOffset(position)
 				resetCount()
 				break
