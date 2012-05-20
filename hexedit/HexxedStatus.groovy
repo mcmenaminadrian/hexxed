@@ -24,6 +24,7 @@ class HexxedStatus {
 	def fileChan
 	def editMode
 	def undoList = []
+	def redoList = []
 	def usingTempFile = false
 	def tempFile
 	def holdingFileChan
@@ -136,6 +137,7 @@ class HexxedStatus {
 	boolean setValueAt(def value, def row, def col)
 	{
 		def commandSet = new HexxedSetValueCommand(row, col, value, this)
+		undoList << commandSet
 		commandSet.execute()
 		return commandSuccess
 	}

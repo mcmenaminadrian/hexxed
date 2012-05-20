@@ -25,5 +25,12 @@ class HexxedSetValueCommand implements Command {
 		statusHolder.executeSetValue(this)
 	}
 	
+	void undo() {
+		def tempVal = newValue
+		newValue = oldValue
+		oldValue = tempVal
+		statusHolder.executeSetValue(this)
+	}
+	
 
 }
