@@ -85,7 +85,6 @@ class HexxedTableModel extends AbstractTableModel {
 	void setValueAt(def value, int row, int col)
 	{
 		def oldValue = getValueAt(row, col)
-		hexxedStatus.storeUndo(oldValue, row, col)
 		if (hexxedStatus.setValueAt(value, row, col))
 			fireTableCellUpdated(row, col)
 	}

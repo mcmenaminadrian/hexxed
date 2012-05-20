@@ -29,6 +29,7 @@ class HexxedStatus {
 	def holdingFileChan
 	def hexxedFile
 	def actionListen
+	def commandSuccess
 	static actionObject
 	
 	def subscribersLittleEndian = []
@@ -41,14 +42,6 @@ class HexxedStatus {
 	def subscribersFileName = []
 	def subscribersEditMode = []
 	def subscribersFileObj = []
-	
-	
-	def storeUndo(def val, def row, def col)
-	{
-		def address = offset + row * 16 + (col - 1)
-		def undoRecord = new UndoRecord(bitWidth, littleEndian, val, address)
-		undoList << undoRecord
-	}
 
 	void badCommandString(def string)
 	{
@@ -142,6 +135,17 @@ class HexxedStatus {
 	
 	boolean setValueAt(def value, def row, def col)
 	{
+		def commandSet = new HexxedSetValueCommand(row, col, value, this)
+		commandSet.execute()
+		return commandSuccess
+	}
+	
+	void executeSetValue(def commandObj)
+	{
+		def value = commandObj.newValue
+		def row = commandObj.row
+		def col = commandObj.col
+		
 		//is value a valid hex number?
 		def nibbles = 2
 		if (bitWidth == 16)
@@ -156,7 +160,8 @@ class HexxedStatus {
 			windowEdit.commandTextStatus.append(
 				"Failed: Edits must be hex format and match bit width\n")
 			undoList.pop()
-			return false
+			commandSuccess = false
+			return
 		}
 		//create a temporary file if we have not done so already
 		if (usingTempFile == false) {
@@ -196,7 +201,8 @@ class HexxedStatus {
 		}
 		def address = offset + row * 16 + (col - 1)
 		fileChan.write(bytes, address)
-		return true
+		commandSuccess = true
+		return
 	}
 	
 	def valueAt(def row, def col)
