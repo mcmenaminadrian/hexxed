@@ -28,6 +28,7 @@ class HexxedStatus {
 	def tempFile
 	def holdingFileChan
 	def hexxedFile
+	def actionListen
 	static actionObject
 	
 	def subscribersLittleEndian = []
@@ -57,6 +58,7 @@ class HexxedStatus {
 	
 	void cleanCommandLine()
 	{
+		windowEdit.commandTextLine.removeActionListener(actionListen)
 		windowEdit.commandTextLine.setEditable(false)
 		windowEdit.commandTextLine.setText("")
 		actionObject.returnToViModeFromCommand()
@@ -64,11 +66,10 @@ class HexxedStatus {
 	
 	void setupWriteFile(def actObject)
 	{
-		def pathToFile = fileName
 		actionObject = actObject
-		windowEdit.commandTextLine.setText(":w $pathToFile")
-		windowEdit.commandTextLine.addActionListener(
-			new HexxedWriteFileAdapter(this))
+		windowEdit.commandTextLine.setText(":w $fileName")
+		actionListen = new HexxedWriteFileAdapter(this)
+		windowEdit.commandTextLine.addActionListener(actionListen)
 		windowEdit.commandTextLine.setEditable(true)
 	}
 	
@@ -76,8 +77,8 @@ class HexxedStatus {
 	{
 		actionObject = actObject
 		windowEdit.commandTextLine.setText(":q")
-		windowEdit.commandTextLine.addActionListener(
-			new HexxedWriteFileAdapter(this))
+		actionListen = new HexxedWriteFileAdapter(this)
+		windowEdit.commandTextLine.addActionListener(actionListen)
 		windowEdit.commandTextLine.setEditable(true)
 	}
 	
@@ -101,40 +102,40 @@ class HexxedStatus {
 		def backupFile
 		def backChannel
 		if (filePath)
-			fileName = filePath
+			fileName = filePath.trim()
 		//backup file
 		try {
 			backupFile = File.createTempFile("~~bCKUP", null)
 			def backStream = new RandomAccessFile(backupFile, "rw")
 			backChannel = backStream.getChannel()
-			holdingFileChan.transferTo(0, holdingFileChan.size(), backChannel)
+			fileChan.transferTo(0, fileChan.size(), backChannel)
 			backChannel.close()
 		}
 		catch (e) {
 			windowEdit.commandTextStatus.append("Exception $e\n")
 			windowEdit.commandTextStatus.append(
-				"Could not backup file - returning to old file")
-			fileChan.close()
-			fileChan = holdingFileChan
-			usingTempFile = false
+				"Could not backup edit")
 			cleanCommandLine()
 			return
 		}
 		
 		try {
-			holdingFileChan.truncate(0)
-			fileChan.transferTo(0, fileChan.size(), holdingFileChan)
+			hexxedFile = new RandomAccessFile(fileName, "rw")
+			hexxedFile.getChannel().truncate(0)
+			fileChan.transferTo(0, fileChan.size(), hexxedFile.getChannel())
 			fileChan.close()
+			fileChan = hexxedFile.getChannel()
 			backupFile.delete()
 		}
 		catch (e)
 		{
 			windowEdit.commandTextStatus.append("Exception $e\n")
 			windowEdit.commandTextStatus.append(
-				"Could not save file: backup at ${backupFile.getPath()}")
+				"Could not save edit: backup at ${backupFile.getPath()}")
+			cleanCommandLine()
+			return
 		}
-		
-		fileChan = holdingFileChan
+
 		usingTempFile = false
 		cleanCommandLine()
 	}
@@ -158,18 +159,19 @@ class HexxedStatus {
 			return false
 		}
 		//create a temporary file if we have not done so already
-		//this stores a copy of the unchanged file if we don't save changes
 		if (usingTempFile == false) {
-			 def tempFileObj = File.createTempFile(fileChan.toString(), null)
-			 def outStream = new RandomAccessFile(tempFileObj, "rw")
-			 def tempFileChan = outStream.getChannel()
-			 fileChan.transferTo(0, fileChan.size(), tempFileChan)
-			 tempFile = tempFileObj.getPath()
-			 holdingFileChan = fileChan
-			 fileChan = tempFileChan
-			 windowEdit.commandTextStatus.append(
-				 "Temporary file written to $tempFile\n")
-			 usingTempFile = true
+			//store a copy of the pristine file
+			def tempFileObj = File.createTempFile(fileChan.toString(), null)
+			def outStream = new RandomAccessFile(tempFileObj, "rw")
+			holdingFileChan = outStream.getChannel()
+			fileChan.transferTo(0, fileChan.size(), holdingFileChan)
+			tempFile = tempFileObj.getPath()
+			//close the original so we edit only the copy
+			fileChan.close()
+			fileChan = holdingFileChan
+			windowEdit.commandTextStatus.append(
+				"Temporary file written to $tempFile\n")
+			usingTempFile = true
 		}
 		
 		def bytes = ByteBuffer.allocate((nibbles / 2) as Integer)
