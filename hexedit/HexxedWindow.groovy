@@ -141,13 +141,14 @@ class HexxedWindow {
 			"K":"UP_LINE", "J":"DOWN_LINE", "1":"ONE", "2":"TWO", "3":"THREE",
 			"4":"FOUR", "5":"FIVE", "6":"SIX", "7":"SEVEN", "8":"EIGHT",
 			"9":"NINE", "0":"ZERO", "OPEN_BRACKET":"BACK_SCREEN",
-			"CLOSE_BRACKET":"NEXT_SCREEN", "ENTER":"DOWN_LINE", "I":"EDIT"]
+			"CLOSE_BRACKET":"NEXT_SCREEN", "ENTER":"DOWN_LINE", "I":"EDIT",
+			"U":"UNDO"]
 		
 		shiftCommandMap = ["VK_OPEN_BRACKET":"BACK_BLOCK",
 			"VK_CLOSE_BRACKET":"NEXT_BLOCK", "VK_SEMICOLON":"COMMAND_MODE"]
 	
 		ctrlCommandMap = ["VK_U":"HALFSCREEN_UP", "VK_D":"HALFSCREEN_DOWN",
-			"VK_B":"BACK_SCREEN", "VK_F":"NEXT_SCREEN"]
+			"VK_B":"BACK_SCREEN", "VK_F":"NEXT_SCREEN", "VK_R":"REDO"]
 		
 		colonCommandMap = ["W":"WRITE", "Q":"QUIT", "ENTER":"DONE"]
 		

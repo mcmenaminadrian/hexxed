@@ -170,6 +170,20 @@ class HexxedViAction extends AbstractAction {
 			case HexxedConstants.DONE:
 				processEnter()
 				break
+			case HexxedConstants.UNDO:
+				if (statusHolder.undoList.size() > 0) {
+					def command = statusHolder.undoList.pop()
+					command.execute()
+					statusHolder.redoList << command
+				}
+				break
+			case HexxedConstants.REDO:
+				if (statusHolder.redoList.size() > 0) {
+					def command = statusHolder.redoList.pop()
+					command.execute()
+					statusHolder.undoList << command
+				}
+				break
 			case HexxedConstants.END:
 				if (counting)
 					statusHolder.offset = 16 * (count - 1)

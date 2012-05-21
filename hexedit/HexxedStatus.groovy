@@ -138,8 +138,6 @@ class HexxedStatus {
 	{
 		def commandSet = new HexxedSetValueCommand(row, col, value, this)
 		undoList << commandSet
-		if (offset != commandSet.position)
-			setOffset(commandSet.position)
 		commandSet.execute()
 		return commandSuccess
 	}
@@ -149,6 +147,9 @@ class HexxedStatus {
 		def value = commandObj.newValue
 		def row = commandObj.row
 		def col = commandObj.col
+		
+		if (offset != commandObj.position)
+		setOffset(commandObj.position)
 		
 		//is value a valid hex number?
 		def nibbles = 2
