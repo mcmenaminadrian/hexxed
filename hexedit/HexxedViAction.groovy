@@ -172,27 +172,27 @@ class HexxedViAction extends AbstractAction {
 				break
 			case HexxedConstants.UNDO:
 				def x = 1
-				if (statusHolder.undoList.size() > 0) {
-					if (counting)
-						x = count
-					for (i in 1..x) {
-						def command = statusHolder.undoList.pop()
-						command.execute()
-						statusHolder.redoList << command
-					}
+				if (counting)
+					x = count
+				for (i in 1..x) {
+					if (statusHolder.undoList.size == 0)
+						break
+					def command = statusHolder.undoList.pop()
+					command.execute()
+					statusHolder.redoList << command
 				}
 				resetCount()
 				break
 			case HexxedConstants.REDO:
 				def x = 1
-				if (statusHolder.undoList.size() > 0) {
-					if (counting)
-						x = count
-					for (i in 1..x) {
-						def command = statusHolder.redoList.pop()
-						command.execute()
-						statusHolder.undoList << command
-					}
+				if (counting)
+					x = count
+				for (i in 1..x) {
+					if (statusHolder.redoList.size == 0)
+						break
+					def command = statusHolder.redoList.pop()
+					command.execute()
+					statusHolder.undoList << command
 				}
 				resetCount()
 				break

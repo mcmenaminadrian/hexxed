@@ -143,11 +143,31 @@ class HexxedStatus {
 		return commandSuccess
 	}
 	
+	void resetTableToMatchCommand(def commandObj)
+	{
+		def oldBitWidth = bitWidth
+		def oldLE = littleEndian
+		def oldBE = bigEndian
+		bitWidth = commandObj.bitWidth
+		littleEndian = commandObj.le
+		bigEndian = commandObj.be
+		commandObj.bitWidth = oldBitWidth
+		commandObj.le = oldLE
+		commandObj.be = oldBE
+	}
+	
 	void executeSetValue(def commandObj)
 	{
+		def reverseRequired = false
 		def value = commandObj.newValue
 		def row = commandObj.row
 		def col = commandObj.col
+		def tableModel = windowEdit.tableHex.getModel()
+		if (commandObj.bitWidth != bitWidth || commandObj.le != littleEndian) {
+			resetTableToMatchCommand(commandObj)
+			tableModel.fireTableChanged(new TableModelEvent(tableModel))
+			reverseRequired = true
+		}
 		
 		if (offset != commandObj.position)
 		setOffset(commandObj.position)
@@ -167,6 +187,8 @@ class HexxedStatus {
 				"Failed: Edits must be hex format and match bit width\n")
 			undoList.pop()
 			commandSuccess = false
+			if (reverseRequired)
+				resetTableToMatchCommand(commandObj)
 			return
 		}
 		//create a temporary file if we have not done so already
@@ -207,7 +229,8 @@ class HexxedStatus {
 		}
 		def address = offset + row * 16 + (col - 1)
 		fileChan.write(bytes, address)
-		def tableModel = windowEdit.tableHex.getModel()
+		if (reverseRequired)
+			resetTableToMatchCommand(commandObj)
 		tableModel.fireTableChanged(new TableModelEvent(tableModel))
 		commandSuccess = true
 		return
