@@ -1,6 +1,7 @@
 package hexedit
 
 import javax.imageio.IIOException
+import javax.swing.event.TableModelEvent
 import java.nio.ByteBuffer
 
 class HexxedStatus {
@@ -206,6 +207,8 @@ class HexxedStatus {
 		}
 		def address = offset + row * 16 + (col - 1)
 		fileChan.write(bytes, address)
+		def tableModel = windowEdit.tableHex.getModel()
+		tableModel.fireTableChanged(new TableModelEvent(tableModel))
 		commandSuccess = true
 		return
 	}
