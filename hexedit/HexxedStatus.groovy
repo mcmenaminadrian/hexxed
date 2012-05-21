@@ -138,6 +138,8 @@ class HexxedStatus {
 	{
 		def commandSet = new HexxedSetValueCommand(row, col, value, this)
 		undoList << commandSet
+		if (offset != commandSet.position)
+			setOffset(commandSet.position)
 		commandSet.execute()
 		return commandSuccess
 	}

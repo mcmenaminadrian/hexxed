@@ -10,6 +10,7 @@ class HexxedSetValueCommand implements Command {
 	def col
 	def newValue
 	def oldValue
+	def position
 	def statusHolder
 	
 	HexxedSetValueCommand(def r, def c, def value, def statusObj)
@@ -19,6 +20,7 @@ class HexxedSetValueCommand implements Command {
 		row = r
 		col = c
 		oldValue = statusHolder.valueAt(row, col)
+		position = statusHolder.offset
 	}
 	
 	void execute() {
