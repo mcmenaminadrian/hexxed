@@ -1,8 +1,5 @@
 package hexedit
 
-public interface Command {
-	void execute();
- }
 
 class HexxedSetValueCommand implements Command {
 	

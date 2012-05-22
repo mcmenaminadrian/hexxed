@@ -143,6 +143,13 @@ class HexxedStatus {
 		return commandSuccess
 	}
 	
+	def deletePoint(def count)
+	{
+		def commandDelete = new HexxedDeleteCommand(count, this)
+		undoList << commandDelete
+		commandDelete.execute()
+	}
+	
 	void resetTableToMatchCommand(def commandObj)
 	{
 		def oldBitWidth = bitWidth
@@ -154,6 +161,66 @@ class HexxedStatus {
 		commandObj.bitWidth = oldBitWidth
 		commandObj.le = oldLE
 		commandObj.be = oldBE
+	}
+	
+	def createTempFile()
+	{
+		if (usingTempFile == false) {
+			//store a copy of the pristine file
+			def tempFileObj = File.createTempFile(fileChan.toString(), null)
+			def outStream = new RandomAccessFile(tempFileObj, "rw")
+			holdingFileChan = outStream.getChannel()
+			fileChan.transferTo(0, fileChan.size(), holdingFileChan)
+			tempFile = tempFileObj.getPath()
+			//close the original so we edit only the copy
+			fileChan.close()
+			fileChan = holdingFileChan
+			windowEdit.commandTextStatus.append(
+				"Temporary file written to $tempFile\n")
+			usingTempFile = true
+		}
+	}
+	
+	void executeDelete(def commandObj)
+	{
+		def reverseRequired = false
+		if (commandObj.bitWidth != bitWidth || commandObj.le != littleEndian) {
+			resetTableToMatchCommand(commandObj)
+			tableModel.fireTableChanged(new TableModelEvent(tableModel))
+			reverseRequired = true
+		}
+		
+		def count = commandObj.count * (bitWidth / 8) as Integer
+		def tableModel = windowEdit.tableHex.getModel()
+		offset = commandObj.position
+		tableModel.fireTableChanged(new TableModelEvent(tableModel))
+		def oldSize = fileChan.size()
+		createTempFile()
+		
+		if (commandObj.oldValues.size() > 0)
+		{	//undo
+			def buf = ByteBuffer.allocate(oldSize - commandObj.position)
+			fileChan.read(buf, commandObj.position)
+			commandObj.oldValues.eachWithIndex(){v, i->
+				def row = i / (16 / (bitWidth / 8)) as Integer
+				def col = i % (16 / (bitWidth / 8)) as Integer
+				def valueCommand = new HexxedSetValueCommand(row, col, v, this)
+				executeSetValue(valueCommand)
+			}
+			fileChan.write(buf, commandObj.position + count)
+			commandObj.oldValues.clear() // so we look like a redo now
+		} else {
+			//delete
+			def buf = ByteBuffer.allocate(oldSize - 
+				(commandObj.position + commandObj.count))
+			for (i in 0..commandObj.count - 1) {
+				def row = i / (16 / (bitWidth / 8)) as Integer
+				def col = i / (16 / (bitWidth / 8)) as Integer
+				commandObj.oldValues << valueAt(row, col)
+			}
+			fileChan.write(buf, commandObj.position)
+			fileChan.truncate(oldSize - count)
+		}
 	}
 	
 	void executeSetValue(def commandObj)
@@ -191,21 +258,7 @@ class HexxedStatus {
 				resetTableToMatchCommand(commandObj)
 			return
 		}
-		//create a temporary file if we have not done so already
-		if (usingTempFile == false) {
-			//store a copy of the pristine file
-			def tempFileObj = File.createTempFile(fileChan.toString(), null)
-			def outStream = new RandomAccessFile(tempFileObj, "rw")
-			holdingFileChan = outStream.getChannel()
-			fileChan.transferTo(0, fileChan.size(), holdingFileChan)
-			tempFile = tempFileObj.getPath()
-			//close the original so we edit only the copy
-			fileChan.close()
-			fileChan = holdingFileChan
-			windowEdit.commandTextStatus.append(
-				"Temporary file written to $tempFile\n")
-			usingTempFile = true
-		}
+		createTempFile()
 		
 		def bytes = ByteBuffer.allocate((nibbles / 2) as Integer)
 		def j = 0

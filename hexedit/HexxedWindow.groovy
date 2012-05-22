@@ -142,7 +142,7 @@ class HexxedWindow {
 			"4":"FOUR", "5":"FIVE", "6":"SIX", "7":"SEVEN", "8":"EIGHT",
 			"9":"NINE", "0":"ZERO", "OPEN_BRACKET":"BACK_SCREEN",
 			"CLOSE_BRACKET":"NEXT_SCREEN", "ENTER":"DOWN_LINE", "I":"EDIT",
-			"U":"UNDO"]
+			"U":"UNDO", "X":"DELETE"]
 		
 		shiftCommandMap = ["VK_OPEN_BRACKET":"BACK_BLOCK",
 			"VK_CLOSE_BRACKET":"NEXT_BLOCK", "VK_SEMICOLON":"COMMAND_MODE"]

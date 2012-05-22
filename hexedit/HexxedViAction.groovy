@@ -1,7 +1,8 @@
 package hexedit
 
+
+
 import java.awt.event.ActionEvent
-import javax.swing.AbstractAction
 import javax.swing.*
 import java.awt.*
 import java.awt.event.*
@@ -169,6 +170,13 @@ class HexxedViAction extends AbstractAction {
 				break
 			case HexxedConstants.DONE:
 				processEnter()
+				break
+			case HexxedConstants.DELETE:
+				def x = 1
+				if (counting)
+					x = count
+				statusHolder.deleteHex(x)
+				resetCount()
 				break
 			case HexxedConstants.UNDO:
 				def x = 1
