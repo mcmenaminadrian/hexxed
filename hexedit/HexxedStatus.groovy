@@ -143,7 +143,7 @@ class HexxedStatus {
 		return commandSuccess
 	}
 	
-	def deletePoint(def count)
+	def deleteHex(def count)
 	{
 		def commandDelete = new HexxedDeleteCommand(count, this)
 		undoList << commandDelete
@@ -212,7 +212,7 @@ class HexxedStatus {
 		} else {
 			//delete
 			def buf = ByteBuffer.allocate(oldSize - 
-				(commandObj.position + commandObj.count))
+				(commandObj.position + commandObj.count) as Integer)
 			for (i in 0..commandObj.count - 1) {
 				def row = i / (16 / (bitWidth / 8)) as Integer
 				def col = i / (16 / (bitWidth / 8)) as Integer

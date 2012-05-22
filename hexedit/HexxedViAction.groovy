@@ -1,7 +1,5 @@
 package hexedit
 
-
-
 import java.awt.event.ActionEvent
 import javax.swing.*
 import java.awt.*
