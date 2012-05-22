@@ -143,7 +143,7 @@ class HexxedStatus {
 		return commandSuccess
 	}
 	
-	def deletePoint(def count)
+	def deleteHex(def count)
 	{
 		def commandDelete = new HexxedDeleteCommand(count, this)
 		undoList << commandDelete
@@ -199,11 +199,19 @@ class HexxedStatus {
 		
 		if (commandObj.oldValues.size() > 0)
 		{	//undo
-			def buf = ByteBuffer.allocate(oldSize - commandObj.position)
+			def buf = ByteBuffer.allocate((oldSize - commandObj.position)
+				 as Integer)
 			fileChan.read(buf, commandObj.position)
 			commandObj.oldValues.eachWithIndex(){v, i->
-				def row = i / (16 / (bitWidth / 8)) as Integer
-				def col = i % (16 / (bitWidth / 8)) as Integer
+				def row
+				def col
+				if (i == 0) {
+					row = 0
+					col = 0
+				} else {
+					row = i / (16 / (bitWidth / 8)) as Integer
+					col = i % (16 / (bitWidth / 8)) as Integer
+				}
 				def valueCommand = new HexxedSetValueCommand(row, col, v, this)
 				executeSetValue(valueCommand)
 			}
@@ -211,16 +219,25 @@ class HexxedStatus {
 			commandObj.oldValues.clear() // so we look like a redo now
 		} else {
 			//delete
-			def buf = ByteBuffer.allocate(oldSize - 
-				(commandObj.position + commandObj.count))
+			def allocSize = oldSize - (commandObj.position + count)
+			def buf = ByteBuffer.allocate(allocSize as Integer)
+			fileChan.read(buf, commandObj.position + count)
 			for (i in 0..commandObj.count - 1) {
-				def row = i / (16 / (bitWidth / 8)) as Integer
-				def col = i / (16 / (bitWidth / 8)) as Integer
+				def row
+				def col
+				if (i == 0) {
+					row = 0
+					col = 0
+				} else {
+					row = i / (16 / (bitWidth / 8)) as Integer
+					col = i % (16 / (bitWidth / 8)) as Integer
+				}
 				commandObj.oldValues << valueAt(row, col)
 			}
 			fileChan.write(buf, commandObj.position)
 			fileChan.truncate(oldSize - count)
 		}
+		tableModel.fireTableChanged(new TableModelEvent(tableModel))
 	}
 	
 	void executeSetValue(def commandObj)
