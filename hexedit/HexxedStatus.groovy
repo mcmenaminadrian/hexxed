@@ -205,7 +205,7 @@ class HexxedStatus {
 		{	//undo
 			def buf = ByteBuffer.allocate((oldSize - commandObj.position)
 				 as Integer)
-			fileChan.read(buf, commandObj.position)
+			fileChan.read(buf, commandObj.position as Integer)
 			commandObj.oldValues.eachWithIndex(){v, i->
 				def row
 				def col
@@ -213,19 +213,19 @@ class HexxedStatus {
 					row = 0
 					col = 0
 				} else {
-					row = i / (16 / (bitWidth / 8)) as Integer
-					col = i % (16 / (bitWidth / 8)) as Integer
+					row = i / (16 / (bitWidth / 8) as Integer) as Integer
+					col = i % (16 / (bitWidth / 8) as Integer) as Integer
 				}
 				def valueCommand = new HexxedSetValueCommand(row, col, v, this)
 				executeSetValue(valueCommand)
 			}
-			fileChan.write(buf, commandObj.position + count)
+			fileChan.write(buf, (commandObj.position + count) as Integer)
 			commandObj.oldValues.clear() // so we look like a redo now
 		} else {
 			//delete
 			def allocSize = oldSize - (commandObj.position + count)
 			def buf = ByteBuffer.allocate(allocSize as Integer)
-			fileChan.read(buf, commandObj.position + count)
+			fileChan.read(buf, (commandObj.position + count) as Integer)
 			for (i in 0..commandObj.count - 1) {
 				def row
 				def col
@@ -233,13 +233,13 @@ class HexxedStatus {
 					row = 0
 					col = 0
 				} else {
-					row = i / (16 / (bitWidth / 8)) as Integer
-					col = i % (16 / (bitWidth / 8)) as Integer
+					row = i / ((16 / (bitWidth / 8)) as Integer) as Integer
+					col = i % ((16 / (bitWidth / 8)) as Integer) as Integer
 				}
 				commandObj.oldValues << valueAt(row, col)
 			}
-			fileChan.write(buf, commandObj.position)
-			fileChan.truncate(oldSize - count)
+			fileChan.write(buf, commandObj.position as Integer)
+			fileChan.truncate(oldSize - count as Integer)
 		}
 		tableModel.fireTableChanged(new TableModelEvent(tableModel))
 		charTableModel.fireTableChanged(new TableModelEvent(charTableModel))
@@ -279,7 +279,8 @@ class HexxedStatus {
 		if (!isHex) {
 			windowEdit.commandTextStatus.append(
 				"Failed: Edits must be hex format and match bit width\n")
-			undoList.pop()
+			if (undoList.size())
+				undoList.pop()
 			commandSuccess = false
 			if (reverseRequired)
 				resetTableToMatchCommand(commandObj)
