@@ -155,9 +155,9 @@ class HexxedStatus {
 		def oldBitWidth = bitWidth
 		def oldLE = littleEndian
 		def oldBE = bigEndian
-		bitWidth = commandObj.bitWidth
-		littleEndian = commandObj.le
-		bigEndian = commandObj.be
+		setBitWidth(commandObj.bitWidth)
+		setLittleEndian(commandObj.le)
+		setBigEndian(commandObj.be)
 		commandObj.bitWidth = oldBitWidth
 		commandObj.le = oldLE
 		commandObj.be = oldBE

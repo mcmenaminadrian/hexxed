@@ -60,16 +60,22 @@ class HexxedViAction extends AbstractAction {
 		windowHexxed.commandMap.each() { k, v ->
 			windowHexxed.tableHex.getInputMap().put(KeyStroke.getKeyStroke(k),
 				"$v")
+			windowHexxed.tableHex.getActionMap().put("$v",
+				new HexxedViAction(this, statusHolder, HexxedConstants."$v"))
 		}
 		windowHexxed.shiftCommandMap.each() { k, v ->
 			def key = KeyStroke.getKeyStroke(KeyEvent."$k",
 				KeyEvent.SHIFT_DOWN_MASK)
 			windowHexxed.tableHex.getInputMap().put(key, "$v")
+			windowHexxed.tableHex.getActionMap().put("$v",
+				new HexxedViAction(this, statusHolder, HexxedConstants."$v"))
 		}
 		windowHexxed.ctrlCommandMap.each() { k, v ->
 			def key = KeyStroke.getKeyStroke(KeyEvent."$k",
 				KeyEvent.CTRL_DOWN_MASK)
 			windowHexxed.tableHex.getInputMap().put(key, "$v")
+			windowHexxed.tableHex.getActionMap().put("$v",
+				new HexxedViAction(this, statusHolder, HexxedConstants."$v"))
 		}
 	}
 	
