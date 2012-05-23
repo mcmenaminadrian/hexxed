@@ -254,15 +254,17 @@ class HexxedStatus {
 		}
 		
 		if (offset != commandObj.position)
-		setOffset(commandObj.position)
+			setOffset(commandObj.position)
 		
 		//is value a valid hex number?
-		def nibbles = 2
-		if (bitWidth == 16)
+		def nibbles
+		if (bitWidth == 8)
+			nibbles = 2
+		else if (bitWidth == 16)
 			nibbles = 4
 		else if (bitWidth == 32)
 			nibbles = 8
-		else if (bitWidth == 64)
+		else
 			nibbles = 16
 		
 		boolean isHex = value.matches("[0-9A-Fa-f]{$nibbles}")
@@ -297,7 +299,7 @@ class HexxedStatus {
 				bytes.put(j++, be)
 			}
 		}
-		def address = offset + row * 16 + (col - 1)
+		def address = offset + row * 16 + (col - 1) * (bitWidth / 8) as Integer
 		fileChan.write(bytes, address)
 		if (reverseRequired)
 			resetTableToMatchCommand(commandObj)
