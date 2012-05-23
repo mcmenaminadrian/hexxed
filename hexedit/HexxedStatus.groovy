@@ -184,16 +184,20 @@ class HexxedStatus {
 	void executeDelete(def commandObj)
 	{
 		def reverseRequired = false
+		def tableModel = windowEdit.tableHex.getModel()
+		def charTableModel = windowEdit.tableChar.getModel()
 		if (commandObj.bitWidth != bitWidth || commandObj.le != littleEndian) {
 			resetTableToMatchCommand(commandObj)
 			tableModel.fireTableChanged(new TableModelEvent(tableModel))
+			charTableModel.fireTableChanged(
+				new TableModelEvent(charTableModel))
 			reverseRequired = true
 		}
 		
 		def count = commandObj.count * (bitWidth / 8) as Integer
-		def tableModel = windowEdit.tableHex.getModel()
 		offset = commandObj.position
 		tableModel.fireTableChanged(new TableModelEvent(tableModel))
+		charTableModel.fireTableChanged(new TableModelEvent(charTableModel))
 		def oldSize = fileChan.size()
 		createTempFile()
 		
@@ -238,6 +242,7 @@ class HexxedStatus {
 			fileChan.truncate(oldSize - count)
 		}
 		tableModel.fireTableChanged(new TableModelEvent(tableModel))
+		charTableModel.fireTableChanged(new TableModelEvent(charTableModel))
 	}
 	
 	void executeSetValue(def commandObj)
@@ -247,9 +252,12 @@ class HexxedStatus {
 		def row = commandObj.row
 		def col = commandObj.col
 		def tableModel = windowEdit.tableHex.getModel()
+		def charTableModel = windowEdit.tableChar.getModel()
 		if (commandObj.bitWidth != bitWidth || commandObj.le != littleEndian) {
 			resetTableToMatchCommand(commandObj)
 			tableModel.fireTableChanged(new TableModelEvent(tableModel))
+			charTableModel.fireTableChanged(
+				new TableModelEvent(charTableModel))
 			reverseRequired = true
 		}
 		
@@ -304,6 +312,7 @@ class HexxedStatus {
 		if (reverseRequired)
 			resetTableToMatchCommand(commandObj)
 		tableModel.fireTableChanged(new TableModelEvent(tableModel))
+		charTableModel.fireTableChanged(new TableModelEvent(charTableModel))
 		commandSuccess = true
 		return
 	}
