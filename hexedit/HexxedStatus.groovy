@@ -3,9 +3,13 @@ package hexedit
 import javax.imageio.IIOException
 import javax.swing.event.TableModelEvent
 import java.nio.ByteBuffer
+import java.awt.event.*
+import java.awt.event.InputEvent
+import javax.swing.*
+import javax.swing.table.*
+import java.awt.*
 
 class HexxedStatus {
-	
 	
 	private HexxedStatus() {}
 	
@@ -32,7 +36,6 @@ class HexxedStatus {
 	def hexxedFile
 	def actionListen
 	def commandSuccess
-	static actionObject
 	
 	def subscribersLittleEndian = []
 	def subscribersBigEndian = []
@@ -51,17 +54,127 @@ class HexxedStatus {
 			"Bad or not understood command: $string\n")
 	}
 	
+	void removeOldBindings()
+	{
+		windowEdit.commandMap.each() { k, v ->
+			windowEdit.tableHex.getInputMap().put(KeyStroke.getKeyStroke(k),
+				null)
+		}
+		windowEdit.shiftCommandMap.each() { k, v ->
+			def key = KeyStroke.getKeyStroke(KeyEvent."$k",
+				KeyEvent.SHIFT_DOWN_MASK)
+			windowEdit.tableHex.getInputMap().put(key, null)
+		}
+		windowEdit.ctrlCommandMap.each() { k, v ->
+			def key = KeyStroke.getKeyStroke(KeyEvent."$k",
+				KeyEvent.CTRL_DOWN_MASK)
+			windowEdit.tableHex.getInputMap().put(key, null)
+		}
+	}
+	
+	void addOldBindings()
+	{
+		windowEdit.commandMap.each() { k, v ->
+			windowEdit.tableHex.getInputMap().put(KeyStroke.getKeyStroke(k),
+				"$v")
+		}
+		windowEdit.shiftCommandMap.each() { k, v ->
+			def key = KeyStroke.getKeyStroke(KeyEvent."$k",
+				KeyEvent.SHIFT_DOWN_MASK)
+			windowEdit.tableHex.getInputMap().put(key, "$v")
+		}
+		windowEdit.ctrlCommandMap.each() { k, v ->
+			def key = KeyStroke.getKeyStroke(KeyEvent."$k",
+				KeyEvent.CTRL_DOWN_MASK)
+			windowEdit.tableHex.getInputMap().put(key, "$v")
+		}
+	}
+	
+	void returnToViModeFromEdit()
+	{
+		setEditMode(false)
+		//kill edit mode binding
+		windowEdit.tableHex.getInputMap().put(
+			KeyStroke.getKeyStroke("ESCAPE"), null)
+		windowEdit.tableHex.getActionMap().put("RETURN_VI_MODE", null)
+		addOldBindings()
+	}
+	
+	void returnToViModeFromCommand()
+	{
+		windowEdit.colonCommandMap.each{k, v ->
+			windowEdit.tableHex.getInputMap().put(
+				KeyStroke.getKeyStroke("$k"), null)
+			windowEdit.tableHex.getActionMap().put("$v", null)
+		}
+		addOldBindings()
+	}
+	
+	void setupEditMode()
+	{
+		removeOldBindings()
+		//add ESCAPE (vi mode) binding
+		windowEdit.tableHex.getInputMap().put(
+			KeyStroke.getKeyStroke("ESCAPE"), "RETURN_VI_MODE")
+		windowEdit.tableHex.getActionMap().put("RETURN_VI_MODE",
+			new HexxedViAction(windowEdit, this,
+				HexxedConstants.RETURN_VI_MODE))
+		setEditMode(true)
+	}
+	
+	void setupCommandMode()
+	{
+		removeOldBindings()
+		windowEdit.colonCommandMap.each { k, v ->
+			windowEdit.tableHex.getInputMap().put(
+				KeyStroke.getKeyStroke("$k"), "$v")
+			windowEdit.tableHex.getActionMap().put("$v",
+				new HexxedViAction(windowEdit, this,
+					HexxedConstants."$v"))
+		}
+	}
+	
+	void processEnter()
+	{
+		def actionString = windowEdit.commandTextLine.getText()
+		if (actionString.size() == 0) {
+			cleanCommandLine()
+			return
+		}
+		
+		if (actionString[0] != ':') {
+			badCommandString(actionString)
+			cleanCommandLine()
+			return
+		}
+		
+		if (actionString[1] == 'w') {
+			actionString = actionString.minus(":w")
+			if (actionString.isAllWhitespace() || actionString.size() == 0)
+				writeFile(null)
+			else
+				writeFile(actionString)
+			return
+		} else if (actionString[1] == 'q') {
+			actionString = actionString.minus(":q")
+			quitFile(actionString)
+			return
+		}
+		
+		badCommandString(actionString)
+		cleanCommandLine()
+	}
+	
 	void cleanCommandLine()
 	{
 		windowEdit.commandTextLine.removeActionListener(actionListen)
 		windowEdit.commandTextLine.setEditable(false)
 		windowEdit.commandTextLine.setText("")
-		actionObject.returnToViModeFromCommand()
+		returnToViModeFromCommand()
 	}
 	
 	void setupWriteFile(def actObject)
 	{
-		actionObject = actObject
 		windowEdit.commandTextLine.setText(":w $fileName")
 		actionListen = new HexxedWriteFileAdapter(this)
 		windowEdit.commandTextLine.addActionListener(actionListen)
@@ -70,7 +183,6 @@ class HexxedStatus {
 	
 	void setupQuit(def actObject)
 	{
-		actionObject = actObject
 		windowEdit.commandTextLine.setText(":q")
 		actionListen = new HexxedWriteFileAdapter(this)
 		windowEdit.commandTextLine.addActionListener(actionListen)

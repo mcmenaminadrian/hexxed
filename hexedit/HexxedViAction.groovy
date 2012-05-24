@@ -34,125 +34,6 @@ class HexxedViAction extends AbstractAction {
 		count = count * 10 + add
 		windowHexxed.commandTextLine.setText(count as String)
 	}
-	
-	void removeOldBindings()
-	{
-		resetCount()
-		//remove old key bindings
-		windowHexxed.commandMap.each() { k, v ->
-			windowHexxed.tableHex.getInputMap().put(KeyStroke.getKeyStroke(k),
-				null)
-		}
-		windowHexxed.shiftCommandMap.each() { k, v ->
-			def key = KeyStroke.getKeyStroke(KeyEvent."$k",
-				KeyEvent.SHIFT_DOWN_MASK)
-			windowHexxed.tableHex.getInputMap().put(key, null)
-		}
-		windowHexxed.ctrlCommandMap.each() { k, v ->
-			def key = KeyStroke.getKeyStroke(KeyEvent."$k",
-				KeyEvent.CTRL_DOWN_MASK)
-			windowHexxed.tableHex.getInputMap().put(key, null)
-		}
-	}
-	
-	void addOldBindings()
-	{
-		windowHexxed.commandMap.each() { k, v ->
-			windowHexxed.tableHex.getInputMap().put(KeyStroke.getKeyStroke(k),
-				"$v")
-			windowHexxed.tableHex.getActionMap().put("$v",
-				new HexxedViAction(this, statusHolder, HexxedConstants."$v"))
-		}
-		windowHexxed.shiftCommandMap.each() { k, v ->
-			def key = KeyStroke.getKeyStroke(KeyEvent."$k",
-				KeyEvent.SHIFT_DOWN_MASK)
-			windowHexxed.tableHex.getInputMap().put(key, "$v")
-			windowHexxed.tableHex.getActionMap().put("$v",
-				new HexxedViAction(this, statusHolder, HexxedConstants."$v"))
-		}
-		windowHexxed.ctrlCommandMap.each() { k, v ->
-			def key = KeyStroke.getKeyStroke(KeyEvent."$k",
-				KeyEvent.CTRL_DOWN_MASK)
-			windowHexxed.tableHex.getInputMap().put(key, "$v")
-			windowHexxed.tableHex.getActionMap().put("$v",
-				new HexxedViAction(this, statusHolder, HexxedConstants."$v"))
-		}
-	}
-	
-	void returnToViModeFromEdit()
-	{
-		statusHolder.setEditMode(false)
-		//kill edit mode binding
-		windowHexxed.tableHex.getInputMap().put(
-			KeyStroke.getKeyStroke("ESCAPE"), null)
-		windowHexxed.tableHex.getActionMap().put("RETURN_VI_MODE", null)
-		addOldBindings()
-	}
-	
-	void returnToViModeFromCommand()
-	{
-		windowHexxed.colonCommandMap.each{k, v ->
-			windowHexxed.tableHex.getInputMap().put(
-				KeyStroke.getKeyStroke("$k"), null)
-			windowHexxed.tableHex.getActionMap().put("$v", null)
-		}
-		addOldBindings()
-	}
-	
-	void setupEditMode()
-	{
-		removeOldBindings()
-		//add ESCAPE (vi mode) binding
-		windowHexxed.tableHex.getInputMap().put(
-			KeyStroke.getKeyStroke("ESCAPE"), "RETURN_VI_MODE")
-		windowHexxed.tableHex.getActionMap().put("RETURN_VI_MODE",
-			new HexxedViAction(windowHexxed, statusHolder,
-				HexxedConstants.RETURN_VI_MODE))
-		statusHolder.setEditMode(true)
-	}
-	
-	void setupCommandMode()
-	{
-		removeOldBindings()
-		windowHexxed.colonCommandMap.each { k, v ->
-			windowHexxed.tableHex.getInputMap().put(
-				KeyStroke.getKeyStroke("$k"), "$v")
-			windowHexxed.tableHex.getActionMap().put("$v",
-				new HexxedViAction(windowHexxed, statusHolder,
-					HexxedConstants."$v"))
-		}
-	}
-	
-	void processEnter()
-	{
-		def actionString = windowHexxed.commandTextLine.getText()
-		if (actionString.size() == 0) {
-			statusHolder.cleanCommandLine()
-			return
-		}
-		
-		if (actionString[0] != ':') {
-			statusHolder.badCommandString(actionString)
-			statusHolder.cleanCommandLine()
-			return
-		}
-		
-		if (actionString[1] == 'w') {
-			actionString = actionString.minus(":w")
-			if (actionString.isAllWhitespace() || actionString.size() == 0)
-				statusHolder.writeFile(null)
-			else
-				statusHolder.writeFile(actionString)
-			return
-		} else if (actionString[1] == 'q') {
-			actionString = actionString.minus(":q")
-			statusHolder.quitFile(actionString)
-			return
-		}
-		
-		statusHolder.badCommandString(actionString)
-		statusHolder.cleanCommandLine()
-	}
 
 	void actionPerformed(ActionEvent e)
 	{
@@ -164,16 +45,20 @@ class HexxedViAction extends AbstractAction {
 				resetCount()
 				break
 			case HexxedConstants.COMMAND_MODE:
-				setupCommandMode()
+				resetCount()
+				statusHolder.setupCommandMode()
 				break
 			case HexxedConstants.WRITE:
+				resetCount()
 				statusHolder.setupWriteFile(this)
 				break
 			case HexxedConstants.QUIT:
+				resetCount()
 				statusHolder.setupQuit(this)
 				break
 			case HexxedConstants.DONE:
-				processEnter()
+				statusHolder.processEnter()
+				resetCount()
 				break
 			case HexxedConstants.DELETE:
 				def x = 1
@@ -299,10 +184,12 @@ class HexxedViAction extends AbstractAction {
 				updateCount(0)
 				break
 			case HexxedConstants.EDIT:
-				setupEditMode()
+				resetCount()
+				statusHolder.setupEditMode()
 				break
 			case HexxedConstants.RETURN_VI_MODE:
-				returnToViModeFromEdit()
+				resetCount()
+				statusHolder.returnToViModeFromEdit()
 				break
 			default:
 				resetCount()
