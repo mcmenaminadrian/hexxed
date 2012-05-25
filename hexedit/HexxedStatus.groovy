@@ -226,7 +226,14 @@ class HexxedStatus {
 			return
 		} else if (actionString[1] == 'q') {
 			actionString = actionString.minus(":q")
-			quitFile(actionString)
+			if (!usingTempFile ||
+				(actionString.size() > 0 && actionString[0] == '!'))
+				quitFile(actionString)
+			else {
+				windowEdit.commandTextStatus.append(
+					"Unsaved edits - save before quitting\n")
+				cleanCommandLine()
+			}
 			return
 		}
 		
