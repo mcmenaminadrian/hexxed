@@ -47,6 +47,22 @@ class HexxedStatus {
 	def subscribersFileName = []
 	def subscribersEditMode = []
 	def subscribersFileObj = []
+	
+	def commandMap = ["ESCAPE":"VI_MODE", 'G':"END",
+		"K":"UP_LINE", "J":"DOWN_LINE", "1":"ONE", "2":"TWO", "3":"THREE",
+		"4":"FOUR", "5":"FIVE", "6":"SIX", "7":"SEVEN", "8":"EIGHT",
+		"9":"NINE", "0":"ZERO", "OPEN_BRACKET":"BACK_SCREEN",
+		"CLOSE_BRACKET":"NEXT_SCREEN", "ENTER":"DOWN_LINE", "I":"EDIT",
+		"U":"UNDO", "X":"DELETE"]
+	
+	def shiftCommandMap = ["VK_OPEN_BRACKET":"BACK_BLOCK",
+		"VK_CLOSE_BRACKET":"NEXT_BLOCK", "VK_SEMICOLON":"COMMAND_MODE"]
+
+	def ctrlCommandMap = ["VK_U":"HALFSCREEN_UP", "VK_D":"HALFSCREEN_DOWN",
+		"VK_B":"BACK_SCREEN", "VK_F":"NEXT_SCREEN", "VK_R":"REDO"]
+	
+	def colonCommandMap = ["W":"WRITE", "Q":"QUIT", "ENTER":"DONE",
+		"U":"UNDO"]
 
 	void badCommandString(def string)
 	{
@@ -56,34 +72,87 @@ class HexxedStatus {
 	
 	void removeOldBindings()
 	{
-		windowEdit.commandMap.each() { k, v ->
+		commandMap.each() { k, v ->
 			windowEdit.tableHex.getInputMap().put(KeyStroke.getKeyStroke(k),
 				null)
 		}
-		windowEdit.shiftCommandMap.each() { k, v ->
+		shiftCommandMap.each() { k, v ->
 			def key = KeyStroke.getKeyStroke(KeyEvent."$k",
 				KeyEvent.SHIFT_DOWN_MASK)
 			windowEdit.tableHex.getInputMap().put(key, null)
 		}
-		windowEdit.ctrlCommandMap.each() { k, v ->
+		ctrlCommandMap.each() { k, v ->
 			def key = KeyStroke.getKeyStroke(KeyEvent."$k",
 				KeyEvent.CTRL_DOWN_MASK)
 			windowEdit.tableHex.getInputMap().put(key, null)
 		}
 	}
 	
+	void setupBindings()
+	{
+		def key
+		
+		commandMap.each() { k, v ->
+			windowEdit.tableHex.getInputMap().put(
+				KeyStroke.getKeyStroke(k), "$v")
+			windowEdit.tableHex.getActionMap().put("$v",
+				new HexxedViAction(windowEdit, this, HexxedConstants."$v"))
+		}
+		
+		shiftCommandMap.each { k, v ->
+			key = KeyStroke.getKeyStroke(KeyEvent."$k",
+				KeyEvent.SHIFT_DOWN_MASK)
+			windowEdit.tableHex.getInputMap().put(key, "$v")
+			windowEdit.tableHex.getActionMap().put("$v",
+				new HexxedViAction(windowEdit, this, HexxedConstants."$v"))
+		}
+		
+		ctrlCommandMap.each { k, v ->
+			key = KeyStroke.getKeyStroke(KeyEvent."$k",
+				KeyEvent.CTRL_DOWN_MASK)
+			windowEdit.tableHex.getInputMap().put(key, "$v")
+			windowEdit.tableHex.getActionMap().put("$v",
+				new HexxedViAction(windowEdit, this, HexxedConstants."$v"))
+		}
+	}
+	
+	void wipeBindings()
+	{
+		def key
+		
+		commandMap.each() { k, v ->
+			windowEdit.tableHex.getInputMap().put(
+				KeyStroke.getKeyStroke(k), null)
+			windowEdit.tableHex.getActionMap().put("$v", null)
+		}
+		
+		shiftCommandMap.each { k, v ->
+			key = KeyStroke.getKeyStroke(KeyEvent."$k",
+				KeyEvent.SHIFT_DOWN_MASK)
+			windowEdit.tableHex.getInputMap().put(key, null)
+			windowEdit.tableHex.getActionMap().put("$v", null)
+		}
+		
+		ctrlCommandMap.each { k, v ->
+			key = KeyStroke.getKeyStroke(KeyEvent."$k",
+				KeyEvent.CTRL_DOWN_MASK)
+			windowEdit.tableHex.getInputMap().put(key, null)
+			windowEdit.tableHex.getActionMap().put("$v", null)
+		}
+	}
+	
 	void addOldBindings()
 	{
-		windowEdit.commandMap.each() { k, v ->
+		commandMap.each() { k, v ->
 			windowEdit.tableHex.getInputMap().put(KeyStroke.getKeyStroke(k),
 				"$v")
 		}
-		windowEdit.shiftCommandMap.each() { k, v ->
+		shiftCommandMap.each() { k, v ->
 			def key = KeyStroke.getKeyStroke(KeyEvent."$k",
 				KeyEvent.SHIFT_DOWN_MASK)
 			windowEdit.tableHex.getInputMap().put(key, "$v")
 		}
-		windowEdit.ctrlCommandMap.each() { k, v ->
+		ctrlCommandMap.each() { k, v ->
 			def key = KeyStroke.getKeyStroke(KeyEvent."$k",
 				KeyEvent.CTRL_DOWN_MASK)
 			windowEdit.tableHex.getInputMap().put(key, "$v")
@@ -102,12 +171,12 @@ class HexxedStatus {
 	
 	void returnToViModeFromCommand()
 	{
-		windowEdit.colonCommandMap.each{k, v ->
+		colonCommandMap.each{k, v ->
 			windowEdit.tableHex.getInputMap().put(
 				KeyStroke.getKeyStroke("$k"), null)
 			windowEdit.tableHex.getActionMap().put("$v", null)
 		}
-		addOldBindings()
+		setupBindings()
 	}
 	
 	void setupEditMode()
@@ -124,8 +193,8 @@ class HexxedStatus {
 	
 	void setupCommandMode()
 	{
-		removeOldBindings()
-		windowEdit.colonCommandMap.each { k, v ->
+		wipeBindings()
+		colonCommandMap.each { k, v ->
 			windowEdit.tableHex.getInputMap().put(
 				KeyStroke.getKeyStroke("$k"), "$v")
 			windowEdit.tableHex.getActionMap().put("$v",
@@ -570,9 +639,11 @@ class HexxedStatus {
 	
 	void setFileOpen(def fo)
 	{
+		wipeBindings()
 		fileOpen = fo
 		usingTempFile = false
 		notifyFO(subscribersFileOpen)
+		setupBindings()
 	}
 	
 	void setLittleEndian(def le)

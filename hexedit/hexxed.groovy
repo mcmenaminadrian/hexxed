@@ -31,7 +31,7 @@ class HexxedStart
 		hexxedStatus.setOffset(offsetInFile)
 		
 		hexxedWindow = new HexxedWindow(x, y, hexxedStatus)
-		hexxedStatus.setWindowEdit(hexxedWindow)	
+		hexxedStatus.setWindowEdit(hexxedWindow)
 		
 		hexxedFile = new HexxedFile(hexxedStatus)
 		if (fileToEdit)

@@ -26,10 +26,6 @@ class HexxedWindow {
 	def tablePanel
 	def commandTextLine
 	def commandTextStatus
-	def commandMap = [:]
-	def shiftCommandMap = [:]
-	def ctrlCommandMap = [:]
-	def colonCommandMap = [:]
 	
 	HexxedWindow(def x, def y, def controller)
 	{
@@ -135,47 +131,6 @@ class HexxedWindow {
 		statusHolder.subscribeFileOpen(this)
 		statusHolder.subscribeBitWidth(this)
 		statusHolder.subscribeUseBlocks(this)
-		
-		
-		commandMap = ["ESCAPE":"VI_MODE", 'G':"END",
-			"K":"UP_LINE", "J":"DOWN_LINE", "1":"ONE", "2":"TWO", "3":"THREE",
-			"4":"FOUR", "5":"FIVE", "6":"SIX", "7":"SEVEN", "8":"EIGHT",
-			"9":"NINE", "0":"ZERO", "OPEN_BRACKET":"BACK_SCREEN",
-			"CLOSE_BRACKET":"NEXT_SCREEN", "ENTER":"DOWN_LINE", "I":"EDIT",
-			"U":"UNDO", "X":"DELETE"]
-		
-		shiftCommandMap = ["VK_OPEN_BRACKET":"BACK_BLOCK",
-			"VK_CLOSE_BRACKET":"NEXT_BLOCK", "VK_SEMICOLON":"COMMAND_MODE"]
-	
-		ctrlCommandMap = ["VK_U":"HALFSCREEN_UP", "VK_D":"HALFSCREEN_DOWN",
-			"VK_B":"BACK_SCREEN", "VK_F":"NEXT_SCREEN", "VK_R":"REDO"]
-		
-		colonCommandMap = ["W":"WRITE", "Q":"QUIT", "ENTER":"DONE",
-			"U":"UNDO"]
-		
-	
-		
-		commandMap.each() { k, v ->
-			tableHex.getInputMap().put(KeyStroke.getKeyStroke(k), "$v")
-			tableHex.getActionMap().put("$v",
-				new HexxedViAction(this, statusHolder, HexxedConstants."$v"))
-		}
-		
-		shiftCommandMap.each { k, v ->
-			def key = KeyStroke.getKeyStroke(KeyEvent."$k",
-				KeyEvent.SHIFT_DOWN_MASK)
-			tableHex.getInputMap().put(key, "$v")
-			tableHex.getActionMap().put("$v",
-				new HexxedViAction(this, statusHolder, HexxedConstants."$v"))
-		}
-		
-		ctrlCommandMap.each { k, v ->
-			def key = KeyStroke.getKeyStroke(KeyEvent."$k",
-				KeyEvent.CTRL_DOWN_MASK)
-			tableHex.getInputMap().put(key, "$v")
-			tableHex.getActionMap().put("$v",
-				new HexxedViAction(this, statusHolder, HexxedConstants."$v"))
-		}
 	}
 		
 	void setAddressColour(Color color)
