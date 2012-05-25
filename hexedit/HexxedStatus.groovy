@@ -394,6 +394,7 @@ class HexxedStatus {
 				def valueCommand = new HexxedSetValueCommand(row, col, v, this)
 				executeSetValue(valueCommand)
 			}
+			buf.position(0)
 			fileChan.write(buf, (commandObj.position + count) as Integer)
 			commandObj.oldValues.clear() // so we look like a redo now
 		} else {
@@ -404,14 +405,14 @@ class HexxedStatus {
 				buf = ByteBuffer.allocate(allocSize as Integer)
 				fileChan.read(buf, (commandObj.position + count) as Integer)
 			}
-			for (i in 0..commandObj.count - 1) {
-				
+			for (i in 0..commandObj.count - 1) {		
 				def row = i / ((16 / (bitWidth / 8)) as Integer) as Integer
 				def col = i % ((16 / (bitWidth / 8)) as Integer) as Integer
 				col++ //col 0 is address
 				commandObj.oldValues << valueAt(row, col)
 			}
 			if (allocSize > 0) {
+				buf.position(0)
 				fileChan.write(buf, commandObj.position as Integer)
 				fileChan.truncate(oldSize - count as Integer)
 			} else
