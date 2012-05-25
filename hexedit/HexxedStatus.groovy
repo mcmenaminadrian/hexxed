@@ -388,15 +388,9 @@ class HexxedStatus {
 				 as Integer)
 			fileChan.read(buf, commandObj.position as Integer)
 			commandObj.oldValues.eachWithIndex(){v, i->
-				def row
-				def col
-				if (i == 0) {
-					row = 0
-					col = 0
-				} else {
-					row = i / (16 / (bitWidth / 8) as Integer) as Integer
-					col = i % (16 / (bitWidth / 8) as Integer) as Integer
-				}
+				def row = i / (16 / (bitWidth / 8) as Integer) as Integer
+				def col = i % (16 / (bitWidth / 8) as Integer) as Integer
+				col++ //not try to over-write address
 				def valueCommand = new HexxedSetValueCommand(row, col, v, this)
 				executeSetValue(valueCommand)
 			}
@@ -404,23 +398,24 @@ class HexxedStatus {
 			commandObj.oldValues.clear() // so we look like a redo now
 		} else {
 			//delete
+			def buf
 			def allocSize = oldSize - (commandObj.position + count)
-			def buf = ByteBuffer.allocate(allocSize as Integer)
-			fileChan.read(buf, (commandObj.position + count) as Integer)
+			if (allocSize > 0) {
+				buf = ByteBuffer.allocate(allocSize as Integer)
+				fileChan.read(buf, (commandObj.position + count) as Integer)
+			}
 			for (i in 0..commandObj.count - 1) {
-				def row
-				def col
-				if (i == 0) {
-					row = 0
-					col = 0
-				} else {
-					row = i / ((16 / (bitWidth / 8)) as Integer) as Integer
-					col = i % ((16 / (bitWidth / 8)) as Integer) as Integer
-				}
+				
+				def row = i / ((16 / (bitWidth / 8)) as Integer) as Integer
+				def col = i % ((16 / (bitWidth / 8)) as Integer) as Integer
+				col++ //col 0 is address
 				commandObj.oldValues << valueAt(row, col)
 			}
-			fileChan.write(buf, commandObj.position as Integer)
-			fileChan.truncate(oldSize - count as Integer)
+			if (allocSize > 0) {
+				fileChan.write(buf, commandObj.position as Integer)
+				fileChan.truncate(oldSize - count as Integer)
+			} else
+				fileChan.truncate(0)
 		}
 		tableModel.fireTableChanged(new TableModelEvent(tableModel))
 		charTableModel.fireTableChanged(new TableModelEvent(charTableModel))
