@@ -229,7 +229,12 @@ class HexxedStatus {
 			cleanCommandLine()
 			return
 		}
-		
+
+		if (actionString[1] == 'x') {
+			quickExit()
+			return
+		}
+				
 		if (actionString[1] == 'w') {
 			actionString = actionString.minus(":w")
 			if (actionString.isAllWhitespace() || actionString.size() == 0)
