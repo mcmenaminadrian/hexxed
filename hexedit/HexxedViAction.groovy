@@ -57,6 +57,9 @@ class HexxedViAction extends AbstractAction {
 				resetCount()
 				statusHolder.setupQuit(this)
 				break
+			case HexxedConstants.EXIT:
+				statusHolder.quickExit()
+				break
 			case HexxedConstants.DONE:
 				statusHolder.processEnter()
 				resetCount()

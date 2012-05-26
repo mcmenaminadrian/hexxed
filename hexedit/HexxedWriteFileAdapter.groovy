@@ -17,30 +17,6 @@ class HexxedWriteFileAdapter implements ActionListener {
 	void actionPerformed(ActionEvent e)
 	{
 		def actionString = e.getActionCommand()
-		if (actionString.size() == 0) {
-			statusHolder.cleanCommandLine()
-			return
-		}
-		if (actionString[0] != ':') {
-			statusHolder.badCommandString(actionString)
-			statusHolder.cleanCommandLine()
-			return
-		}	
-		if (actionString[1] == 'w') {
-			actionString = actionString.minus(":w")
-			if (actionString.isAllWhitespace() || actionString.size() == 0)
-				statusHolder.writeFile(null)
-			else
-				statusHolder.writeFile(actionString)
-			return
-		} else if (actionString[1] == 'q') {
-			actionString = actionString.minus(":q")
-			statusHolder.quitFile(actionString)
-			return
-		}
-		
-		statusHolder.badCommandString(actionString)
-		statusHolder.cleanCommandLine()
-	
+		statusHolder.processActionString(actionString)
 	}
 }

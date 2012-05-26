@@ -62,7 +62,7 @@ class HexxedStatus {
 		"VK_B":"BACK_SCREEN", "VK_F":"NEXT_SCREEN", "VK_R":"REDO"]
 	
 	def colonCommandMap = ["W":"WRITE", "Q":"QUIT", "ENTER":"DONE",
-		"U":"UNDO"]
+		"U":"UNDO", "X":"EXIT", "E":"NEWEDIT"]
 
 	void badCommandString(def string)
 	{
@@ -203,9 +203,22 @@ class HexxedStatus {
 		}
 	}
 	
+	void quickExit()
+	{
+		if (usingTempFile)
+			writeFile(null)
+		quitFile(null)
+		System.exit(0)
+	}
+	
 	void processEnter()
 	{
 		def actionString = windowEdit.commandTextLine.getText()
+		processActionString(actionString)
+	}
+	
+	void processActionString(def actionString)
+	{
 		if (actionString.size() == 0) {
 			cleanCommandLine()
 			return
