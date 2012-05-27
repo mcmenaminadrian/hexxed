@@ -18,14 +18,11 @@ class HexxedConstants {
 	static def HALFSCREEN_UP = 1006
 	static def HALFSCREEN_DOWN = 1007
 	
-	static def WRITE = 2000
-	static def QUIT = 2001
+
 	static def DONE = 2002
 	static def UNDO = 2003
 	static def REDO = 2004
 	static def DELETE = 2005
-	static def EXIT = 2006
-	static def NEWEDIT = 2007
 	
 	static def ONE = 5001
 	static def TWO = 5002

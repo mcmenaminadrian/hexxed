@@ -49,21 +49,6 @@ class HexxedViAction extends AbstractAction {
 				resetCount()
 				statusHolder.setupCommandMode()
 				break
-			case HexxedConstants.NEWEDIT:
-				resetCount()
-				statusHolder.setupNewEdit()
-				break
-			case HexxedConstants.WRITE:
-				resetCount()
-				statusHolder.setupWriteFile()
-				break
-			case HexxedConstants.QUIT:
-				resetCount()
-				statusHolder.setupQuit()
-				break
-			case HexxedConstants.EXIT:
-				statusHolder.quickExit()
-				break
 			case HexxedConstants.DONE:
 				statusHolder.processEnter()
 				resetCount()

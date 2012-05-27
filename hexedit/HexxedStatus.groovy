@@ -61,8 +61,7 @@ class HexxedStatus {
 	def ctrlCommandMap = ["VK_U":"HALFSCREEN_UP", "VK_D":"HALFSCREEN_DOWN",
 		"VK_B":"BACK_SCREEN", "VK_F":"NEXT_SCREEN", "VK_R":"REDO"]
 	
-	def colonCommandMap = ["W":"WRITE", "Q":"QUIT", "ENTER":"DONE",
-		"U":"UNDO", "X":"EXIT", "E":"NEWEDIT"]
+	def colonCommandMap = ["ENTER":"DONE"]
 
 	void badCommandString(def string)
 	{
@@ -201,6 +200,9 @@ class HexxedStatus {
 				new HexxedViAction(windowEdit, this,
 					HexxedConstants."$v"))
 		}
+		setEditable()
+		windowEdit.commandTextLine.setText(":")
+		windowEdit.commandTextLine.requestFocusInWindow()
 	}
 	
 	void quickExit()
@@ -280,24 +282,6 @@ class HexxedStatus {
 		actionListen = new HexxedWriteFileAdapter(this)
 		windowEdit.commandTextLine.addActionListener(actionListen)
 		windowEdit.commandTextLine.setEditable(true)
-	}
-	
-	void setupWriteFile()
-	{
-		windowEdit.commandTextLine.setText(":w $fileName")
-		setEditable()
-	}
-	
-	void setupQuit()
-	{
-		windowEdit.commandTextLine.setText(":q")
-		setEditable()
-	}
-	
-	void setupNewEdit()
-	{
-		windowEdit.commandTextLine.setText(":e")
-		setEditable()
 	}
 	
 	void quitFile(def commandString)
