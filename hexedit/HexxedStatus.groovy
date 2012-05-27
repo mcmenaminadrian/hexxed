@@ -219,7 +219,7 @@ class HexxedStatus {
 	
 	void processActionString(def actionString)
 	{
-		if (actionString.size() == 0) {
+		if (actionString.size() < 2) {
 			cleanCommandLine()
 			return
 		}
@@ -233,6 +233,14 @@ class HexxedStatus {
 		if (actionString[1] == 'x') {
 			quickExit()
 			return
+		}
+		
+		if (actionString[1] == 'e') {
+			if (actionString.size() > 2 && actionString[2] == '!') {
+				rewindEdits()
+				cleanCommandLine()
+				return
+			}
 		}
 				
 		if (actionString[1] == 'w') {
@@ -267,20 +275,29 @@ class HexxedStatus {
 		returnToViModeFromCommand()
 	}
 	
-	void setupWriteFile(def actObject)
+	void setEditable()
 	{
-		windowEdit.commandTextLine.setText(":w $fileName")
 		actionListen = new HexxedWriteFileAdapter(this)
 		windowEdit.commandTextLine.addActionListener(actionListen)
 		windowEdit.commandTextLine.setEditable(true)
 	}
 	
-	void setupQuit(def actObject)
+	void setupWriteFile()
+	{
+		windowEdit.commandTextLine.setText(":w $fileName")
+		setEditable()
+	}
+	
+	void setupQuit()
 	{
 		windowEdit.commandTextLine.setText(":q")
-		actionListen = new HexxedWriteFileAdapter(this)
-		windowEdit.commandTextLine.addActionListener(actionListen)
-		windowEdit.commandTextLine.setEditable(true)
+		setEditable()
+	}
+	
+	void setupNewEdit()
+	{
+		windowEdit.commandTextLine.setText(":e")
+		setEditable()
 	}
 	
 	void quitFile(def commandString)
@@ -518,6 +535,16 @@ class HexxedStatus {
 		charTableModel.fireTableChanged(new TableModelEvent(charTableModel))
 		commandSuccess = true
 		return
+	}
+	
+	void rewindEdits()
+	{
+		undoList.each{
+			redoList << it
+			it.execute()
+		}
+		undoList.clear()
+		usingTempFile = false
 	}
 	
 	def valueAt(def row, def col)
