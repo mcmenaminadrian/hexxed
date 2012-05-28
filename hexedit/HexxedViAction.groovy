@@ -37,7 +37,6 @@ class HexxedViAction extends AbstractAction {
 
 	void actionPerformed(ActionEvent e)
 	{
-
 		switch (typeAction) {
 			case HexxedConstants.VI_MODE:
 				// In vi mode already so just beep

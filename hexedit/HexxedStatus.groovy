@@ -242,8 +242,11 @@ class HexxedStatus {
 				if (actionString.size() > 2 && actionString[2] == '!') {
 					rewindEdits()
 					break
-				} else
+				} else {
+					actionString -= ":e"
+					loadFile(actionString)
 					break
+				}
 			case 'w':
 				actionString = actionString.minus(":w")
 				if (actionString.isAllWhitespace() || actionString.size() == 0)
@@ -286,11 +289,31 @@ class HexxedStatus {
 	
 	void quitFile(def commandString)
 	{
+		//TODO: handle non-null file
 		if (!fileOpen)
 			return
 		fileChan.close()
 		setFileName(null)
 		setFileOpen(false)
+	}
+	
+	void loadFile(def fileString)
+	{
+		if (fileString.size() == 0)
+			return
+		if (usingTempFile) {
+			windowEdit.commandTextStatus.append(
+				"Unsaved edits - save before loading new file.")
+			return	
+		}
+		if (fileOpen){
+			fileChan.close()
+			setFileName(null)
+			setFileOpen(false)
+		}
+		fileString = fileString.trim()
+		hexxedFile = new HexxedFile(this)
+		hexxedFile.getNewFile(fileString)
 	}
 		
 	void writeFile(def filePath)
