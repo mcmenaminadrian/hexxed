@@ -166,6 +166,7 @@ class HexxedStatus {
 			KeyStroke.getKeyStroke("ESCAPE"), null)
 		windowEdit.tableHex.getActionMap().put("RETURN_VI_MODE", null)
 		addOldBindings()
+		windowEdit.tableHex.requestFocusInWindow()
 	}
 	
 	void returnToViModeFromCommand()
@@ -176,6 +177,7 @@ class HexxedStatus {
 			windowEdit.tableHex.getActionMap().put("$v", null)
 		}
 		setupBindings()
+		windowEdit.tableHex.requestFocusInWindow()
 	}
 	
 	void setupEditMode()
@@ -231,42 +233,40 @@ class HexxedStatus {
 			cleanCommandLine()
 			return
 		}
-
-		if (actionString[1] == 'x') {
-			quickExit()
-			return
-		}
 		
-		if (actionString[1] == 'e') {
-			if (actionString.size() > 2 && actionString[2] == '!') {
-				rewindEdits()
-				cleanCommandLine()
-				return
+		switch (actionString[1]) {
+			case 'x':
+				quickExit()
+				break
+			case 'e':
+				if (actionString.size() > 2 && actionString[2] == '!') {
+					rewindEdits()
+					break
+				} else
+					break
+			case 'w':
+				actionString = actionString.minus(":w")
+				if (actionString.isAllWhitespace() || actionString.size() == 0)
+					writeFile(null)
+				else
+					writeFile(actionString)
+				break
+			case 'q':
+				actionString = actionString.minus(":q")
+				if (!usingTempFile ||
+					(actionString.size() > 0 && actionString[0] == '!'))
+					quitFile(actionString)
+				else
+					windowEdit.commandTextStatus.append(
+						"Unsaved edits - save before quitting\n")
+				break
+			default:
+				badCommandString(actionString)
+				break
 			}
-		}
-				
-		if (actionString[1] == 'w') {
-			actionString = actionString.minus(":w")
-			if (actionString.isAllWhitespace() || actionString.size() == 0)
-				writeFile(null)
-			else
-				writeFile(actionString)
-			return
-		} else if (actionString[1] == 'q') {
-			actionString = actionString.minus(":q")
-			if (!usingTempFile ||
-				(actionString.size() > 0 && actionString[0] == '!'))
-				quitFile(actionString)
-			else {
-				windowEdit.commandTextStatus.append(
-					"Unsaved edits - save before quitting\n")
-				cleanCommandLine()
-			}
-			return
-		}
 		
-		badCommandString(actionString)
 		cleanCommandLine()
+
 	}
 	
 	void cleanCommandLine()
@@ -286,15 +286,11 @@ class HexxedStatus {
 	
 	void quitFile(def commandString)
 	{
-		//TODO: handle non null strings
-		if (!fileOpen) {
-			cleanCommandLine()
+		if (!fileOpen)
 			return
-		}
 		fileChan.close()
 		setFileName(null)
 		setFileOpen(false)
-		cleanCommandLine()
 	}
 		
 	void writeFile(def filePath)
@@ -317,7 +313,6 @@ class HexxedStatus {
 			windowEdit.commandTextStatus.append("Exception $e\n")
 			windowEdit.commandTextStatus.append(
 				"Could not backup edit")
-			cleanCommandLine()
 			return
 		}
 		
@@ -334,12 +329,10 @@ class HexxedStatus {
 			windowEdit.commandTextStatus.append("Exception $e\n")
 			windowEdit.commandTextStatus.append(
 				"Could not save edit: backup at ${backupFile.getPath()}")
-			cleanCommandLine()
 			return
 		}
 
 		usingTempFile = false
-		cleanCommandLine()
 	}
 	
 	boolean setValueAt(def value, def row, def col)

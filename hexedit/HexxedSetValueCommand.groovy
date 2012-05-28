@@ -1,6 +1,5 @@
 package hexedit
 
-
 class HexxedSetValueCommand implements Command {
 	
 	def row

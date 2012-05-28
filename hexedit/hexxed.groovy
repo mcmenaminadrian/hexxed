@@ -11,17 +11,16 @@ class HexxedStart
 	HexxedStart(littleEndian, bigEndian, bitWidth, offsetInFile, blockSize,
 	useBlocks, fileToEdit, x, y)
 	{
-		def hexxedStatus		//Model - a singleton
+		def hexxedStatus		//singleton - controller
 		def hexxedWindow		//View
-		def hexxedFile			//Container
+		def hexxedFile
 	
 		hexxedStatus = HexxedStatus.currentStatus
 		if (littleEndian == false && bigEndian == false) {
 			hexxedStatus.littleEndian = (ByteOrder.nativeOrder()
 				== ByteOrder.LITTLE_ENDIAN) ? true : false
 			hexxedStatus.bigEndian = !hexxedStatus.littleEndian
-		}
-		else {
+		} else {
 			hexxedStatus.setLittleEndian(littleEndian)
 			hexxedStatus.setBigEndian(bigEndian)
 		}
