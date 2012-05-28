@@ -85,6 +85,15 @@ class HexxedViAction extends AbstractAction {
 				}
 				resetCount()
 				break
+			case HexxedConstants.REPEAT:
+				if (statusHolder.undoList.size() == 0)
+					return
+				def x = 1
+				if (counting)
+					x = count
+				statusHolder.repeatLast(x)
+				resetCount()
+				break
 			case HexxedConstants.END:
 				if (counting)
 					statusHolder.offset = 16 * (count - 1)

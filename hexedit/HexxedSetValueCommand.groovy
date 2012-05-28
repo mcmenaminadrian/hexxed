@@ -25,6 +25,18 @@ class HexxedSetValueCommand implements Command {
 		bitWidth = statusHolder.bitWidth
 	}
 	
+	def clone()
+	{
+		def returnedObject = new HexxedSetValueCommand(this.row, this.col,
+			this.newValue, this.statusHolder)
+		returnedObject.oldValue = this.oldValue
+		returnedObject.position = this.position
+		returnedObject.le = this.le
+		returnedObject.be = this.be
+		returnedObject.bitWidth = this.bitWidth
+		return returnedObject
+	}
+	
 	void execute() {
 		statusHolder.executeSetValue(this)
 		def tempVal = newValue

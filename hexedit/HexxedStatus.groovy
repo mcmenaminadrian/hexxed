@@ -48,15 +48,15 @@ class HexxedStatus {
 	def subscribersEditMode = []
 	def subscribersFileObj = []
 	
-	def commandMap = ["ESCAPE":"VI_MODE", 'G':"END",
+	def commandMap = ["ESCAPE":"VI_MODE",
 		"K":"UP_LINE", "J":"DOWN_LINE", "1":"ONE", "2":"TWO", "3":"THREE",
 		"4":"FOUR", "5":"FIVE", "6":"SIX", "7":"SEVEN", "8":"EIGHT",
-		"9":"NINE", "0":"ZERO", "OPEN_BRACKET":"BACK_SCREEN",
-		"CLOSE_BRACKET":"NEXT_SCREEN", "ENTER":"DOWN_LINE", "I":"EDIT",
-		"U":"UNDO", "X":"DELETE"]
+		"9":"NINE", "0":"ZERO", "ENTER":"DOWN_LINE", "I":"EDIT",
+		"U":"UNDO", "X":"DELETE", "PERIOD":"REPEAT"]
 	
 	def shiftCommandMap = ["VK_OPEN_BRACKET":"BACK_BLOCK",
-		"VK_CLOSE_BRACKET":"NEXT_BLOCK", "VK_SEMICOLON":"COMMAND_MODE"]
+		"VK_CLOSE_BRACKET":"NEXT_BLOCK", "VK_SEMICOLON":"COMMAND_MODE",
+		"VK_G":"END", "VK_9":"HALFSCREEN_UP", "VK_0":"HALFSCREEN_DOWN"]
 
 	def ctrlCommandMap = ["VK_U":"HALFSCREEN_UP", "VK_D":"HALFSCREEN_DOWN",
 		"VK_B":"BACK_SCREEN", "VK_F":"NEXT_SCREEN", "VK_R":"REDO"]
@@ -536,6 +536,27 @@ class HexxedStatus {
 		commandSuccess = true
 		return
 	}
+	
+	void repeatLast(def count)
+	{
+		def prevAction = undoList.pop()
+		def z = 0
+		undoList << prevAction //has to remain as undoable
+		try {
+			for (i in [0..count]) {
+				z++
+				def repeatedAction = prevAction.clone()
+				repeatedAction.execute()
+				undoList << repeatedAction
+			}
+		}
+		catch (e)
+		{
+			windowEdit.commandTextStatus.append(
+				"Repeat failed on attempt $z, with exception $e\n")
+		}
+	}
+	
 	
 	void rewindEdits()
 	{
