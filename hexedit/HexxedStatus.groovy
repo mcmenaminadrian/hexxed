@@ -480,8 +480,14 @@ class HexxedStatus {
 			reverseRequired = true
 		}
 		
-		if (offset != commandObj.position)
+		if (offset != commandObj.position) {
 			setOffset(commandObj.position)
+			tableModel.fireTableChanged(new TableModelEvent(tableModel))
+			charTableModel.fireTableChanged(
+				new TableModelEvent(charTableModel))
+		}
+			
+		commandObj.oldValue = valueAt(row, col)
 		
 		//is value a valid hex number?
 		def nibbles
@@ -543,7 +549,7 @@ class HexxedStatus {
 		def z = 0
 		undoList << prevAction //has to remain as undoable
 		try {
-			for (i in [0..count]) {
+			for (i in 1..count) {
 				z++
 				def repeatedAction = prevAction.clone()
 				repeatedAction.execute()
