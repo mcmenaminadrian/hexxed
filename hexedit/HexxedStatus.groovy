@@ -577,7 +577,7 @@ class HexxedStatus {
 	
 	void rewindEdits()
 	{
-		undoList.each {
+		undoList.reverseEach {
 			it.execute()
 			redoList << it
 		}
