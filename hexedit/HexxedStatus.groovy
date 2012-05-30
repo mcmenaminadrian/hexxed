@@ -371,6 +371,8 @@ class HexxedStatus {
 		def commandDelete = new HexxedDeleteCommand(count, this)
 		undoList << commandDelete
 		commandDelete.execute()
+		if (commandDelete.count == 0)
+			undoList.pop() //did nothing so junk it
 	}
 	
 	void resetTableToMatchCommand(def commandObj)
@@ -442,24 +444,33 @@ class HexxedStatus {
 		} else {
 			//delete
 			def buf
-			def allocSize = oldSize - (commandObj.position + count)
-			if (allocSize > 0) {
-				buf = ByteBuffer.allocate(allocSize as Integer)
-				fileChan.read(buf, (commandObj.position + count) as Integer)
+			if (commandObj.position + count > fileChan.size()) {
+				count = (fileChan.size() - commandObj.position) as Integer
+				commandObj.count = (count / (bitWidth / 8)) as Integer
 			}
-			for (i in 0..commandObj.count - 1) {		
-				def row = i / ((16 / (bitWidth / 8)) as Integer) as Integer
-				def col = i % ((16 / (bitWidth / 8)) as Integer) as Integer
-				col++ //col 0 is address
-				commandObj.oldValues << valueAt(row, col)
+			if (count > 0) {
+				def allocSize = oldSize - (commandObj.position + count)
+				if (allocSize > 0) {
+					buf = ByteBuffer.allocate(allocSize as Integer)
+					fileChan.read(buf, (commandObj.position + count)
+						as Integer)
+				}
+				for (i in 0..commandObj.count - 1) {		
+					def row = i / ((16 / (bitWidth / 8)) as Integer) as Integer
+					def col = i % ((16 / (bitWidth / 8)) as Integer) as Integer
+					col++ //col 0 is address
+					commandObj.oldValues << valueAt(row, col)
+				}
+				if (allocSize > 0) {
+					buf.position(0)
+					fileChan.write(buf, commandObj.position as Integer)
+					fileChan.truncate(oldSize - count as Integer)
+				} else
+					fileChan.truncate(0)
 			}
-			if (allocSize > 0) {
-				buf.position(0)
-				fileChan.write(buf, commandObj.position as Integer)
-				fileChan.truncate(oldSize - count as Integer)
-			} else
-				fileChan.truncate(0)
 		}
+		if (reverseRequired)
+			resetTableToMatchCommand(commandObj)
 		tableModel.fireTableChanged(new TableModelEvent(tableModel))
 		charTableModel.fireTableChanged(new TableModelEvent(charTableModel))
 	}
@@ -566,9 +577,9 @@ class HexxedStatus {
 	
 	void rewindEdits()
 	{
-		undoList.each{
-			redoList << it
+		undoList.each {
 			it.execute()
+			redoList << it
 		}
 		undoList.clear()
 		usingTempFile = false
