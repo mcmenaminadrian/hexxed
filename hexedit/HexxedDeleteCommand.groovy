@@ -18,6 +18,12 @@ class HexxedDeleteCommand implements Command {
 		be = statusHolder.bigEndian
 		bitWidth = statusHolder.bitWidth
 		position = statusHolder.offset
+		def selectedCol = statusHolder.windowEdit.tableHex.getSelectedColumn()
+		if (selectedCol < 1)
+			return
+		def selectedRow = statusHolder.windowEdit.tableHex.getSelectedRow()
+		position += 
+			(selectedRow * 16 + (--selectedCol) * (bitWidth / 8)) as Integer
 	}
 	
 	def clone()

@@ -131,6 +131,9 @@ class HexxedWindow {
 		statusHolder.subscribeFileOpen(this)
 		statusHolder.subscribeBitWidth(this)
 		statusHolder.subscribeUseBlocks(this)
+		tableHex.setSelectionMode(ListSelectionModel.SINGLE_SELECTION)
+		tableHex.setRowSelectionAllowed(false)
+		tableHex.setColumnSelectionAllowed(false)
 	}
 		
 	void setAddressColour(Color color)

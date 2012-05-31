@@ -420,6 +420,7 @@ class HexxedStatus {
 		}
 		
 		def count = commandObj.count * (bitWidth / 8) as Integer
+		def oldOffset = offset
 		offset = commandObj.position
 		tableModel.fireTableChanged(new TableModelEvent(tableModel))
 		charTableModel.fireTableChanged(new TableModelEvent(charTableModel))
@@ -471,6 +472,7 @@ class HexxedStatus {
 		}
 		if (reverseRequired)
 			resetTableToMatchCommand(commandObj)
+		offset = oldOffset
 		tableModel.fireTableChanged(new TableModelEvent(tableModel))
 		charTableModel.fireTableChanged(new TableModelEvent(charTableModel))
 	}
