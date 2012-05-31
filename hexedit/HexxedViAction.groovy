@@ -104,17 +104,20 @@ class HexxedViAction extends AbstractAction {
 				resetCount()
 				break
 			case HexxedConstants.DOWN_LINE:
-				if (counting)
-					statusHolder.offset += 16 * count
-				else
-					statusHolder.offset += 16
-				resetCount()
-				break
 			case HexxedConstants.UP_LINE:
+			case HexxedConstants.LEFT:
+			case HexxedConstants.RIGHT:
+				def x = 1
 				if (counting)
-					statusHolder.offset -= 16 * count
+					x = count
+				if (typeAction == HexxedConstants.DOWN_LINE)
+					statusHolder.moveLines(x)
+				else if (typeAction == HexxedConstants.UP_LINE)
+					statusHolder.moveLines(-x)
+				else if (typeAction == HexxedConstants.LEFT)
+					statusHolder.moveLeft(x)
 				else
-					statusHolder.offset -= 16
+					statusHolder.moveRight(x)
 				resetCount()
 				break
 			case HexxedConstants.BACK_BLOCK:

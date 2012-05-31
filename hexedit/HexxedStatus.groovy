@@ -48,7 +48,7 @@ class HexxedStatus {
 	def subscribersEditMode = []
 	def subscribersFileObj = []
 	
-	def commandMap = ["ESCAPE":"VI_MODE",
+	def commandMap = ["ESCAPE":"VI_MODE", "H":"LEFT", "L":"RIGHT",
 		"K":"UP_LINE", "J":"DOWN_LINE", "1":"ONE", "2":"TWO", "3":"THREE",
 		"4":"FOUR", "5":"FIVE", "6":"SIX", "7":"SEVEN", "8":"EIGHT",
 		"9":"NINE", "0":"ZERO", "ENTER":"DOWN_LINE", "I":"EDIT",
@@ -701,6 +701,56 @@ class HexxedStatus {
 		
 		bytes.array().eachByte(displayCharLine)
 		return lineOut
+	}
+	
+	void moveLines(def lines)
+	{
+		def selectedRow = windowEdit.tableHex.getSelectedRow()
+		if (selectedRow < 0)
+			selectedRow = 0
+		def selectedCol = windowEdit.tableHex.getSelectedColumn()
+		if (selectedCol < 1)
+			selectedCol = 1
+		setOffset(offset += lines * 16)
+		if (offset == 0 && lines < 0) {
+			selectedRow += lines
+			if (selectedRow < 0)
+				selectedRow = 0
+		}
+		windowEdit.tableHex.changeSelection(
+			selectedRow, selectedCol, false, false)
+	}
+	
+	void moveRight(def spaces)
+	{
+		def selectedRow = windowEdit.tableHex.getSelectedRow()
+		if (selectedRow < 0)
+			selectedRow = 0
+		def selectedCol = windowEdit.tableHex.getSelectedColumn()
+		if (selectedCol < 1)
+			selectedCol = 1
+		if (selectedCol + spaces > 16 / (bitWidth / 8))
+			selectedCol = (16 / (bitWidth / 8)) as Integer
+		else
+			selectedCol += spaces		
+		windowEdit.tableHex.changeSelection(
+			selectedRow, selectedCol, false, false)
+	}
+	
+	void moveLeft(def spaces)
+	{
+		def selectedRow = windowEdit.tableHex.getSelectedRow()
+		if (selectedRow < 0)
+			selectedRow = 0
+		def selectedCol = windowEdit.tableHex.getSelectedColumn()
+		if (selectedCol < 1)
+			selectedCol = 1
+		if (selectedCol - spaces < 1)
+			selectedCol = 1
+		else
+			selectedCol -= spaces
+		windowEdit.tableHex.changeSelection(
+			selectedRow, selectedCol, false, false)
 	}
 	
 	void setHexxedFile(def file)

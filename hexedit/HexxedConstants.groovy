@@ -17,6 +17,8 @@ class HexxedConstants {
 	static def NEXT_SCREEN = 1005
 	static def HALFSCREEN_UP = 1006
 	static def HALFSCREEN_DOWN = 1007
+	static def LEFT = 1008
+	static def RIGHT = 1009
 	
 
 	static def DONE = 2002
