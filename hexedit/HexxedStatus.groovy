@@ -442,25 +442,31 @@ class HexxedStatus {
 		if (commandObj.done) {
 			//undo - make an unrecorded delete command and execute it
 			def oldOffset = offset
-			offset = commandObj.insertPosition()
+			offset = commandObj.insertPosition
+			def selCol = windowEdit.tableHex.getSelectedColumn()
+			def selRow = windowEdit.tableHex.getSelectedRow()
+			windowEdit.tableHex.changeSelection(0, 1, false, false)
 			def deleteInsert = new HexxedDeleteCommand(commandObj.count, this)
 			deleteInsert.execute()
 			offset = oldOffset
+			if (selCol < 1) {
+				selCol = 1
+				selRow = 0
+			}
+			windowEdit.tableHex.changeSelection(selRow, selCol, false, false)
 			commandObj.done = false
-			redoList << commandObj
 		} else {
 			def insertBuf = ByteBuffer.allocate(count)
 			if (commandObj.insertPosition >= oldSize)
 				commandObj.insertPosition = oldSize - 1
 			def appendBuf =
 				ByteBuffer.allocate(
-					(oldSize - (1 + commandObj.insertPosition)) as Integer)
+					(oldSize - commandObj.insertPosition) as Integer)
 			fileChan.read(appendBuf, commandObj.insertPosition)
 			fileChan.write(insertBuf, commandObj.insertPosition)
 			appendBuf.position(0)
 			fileChan.write(appendBuf, commandObj.insertPosition + count)
 			commandObj.done = true
-			undoList << commandObj
 		}
 		
 		if (reverseRequired)

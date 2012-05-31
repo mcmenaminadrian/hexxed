@@ -14,6 +14,12 @@ class HexxedInsertCommand implements Command {
 		statusHolder = statusObj
 		bitWidth = statusHolder.bitWidth
 		insertPosition = statusHolder.offset
+		def colPosition = statusHolder.windowEdit.tableHex.getSelectedColumn()
+		if (colPosition > 0) {
+			def rowPosition = statusHolder.windowEdit.tableHex.getSelectedRow()
+			insertPosition += 
+				(--colPosition * (bitWidth / 8)) + rowPosition * 16 as Integer
+		}
 		done = false // inserting
 		
 	}
@@ -23,7 +29,7 @@ class HexxedInsertCommand implements Command {
 		def returnedObject =
 			new HexxedInsertCommand(this.count, this.statusHolder)
 		returnedObject.bitWidth = this.bitWidth
-		returnedObject.done = ~(this.done)
+		returnedObject.done = !(this.done)
 		returnedObject.insertPosition = this.insertPosition
 		return returnedObject
 	}
