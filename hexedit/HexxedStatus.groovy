@@ -180,9 +180,11 @@ class HexxedStatus {
 		windowEdit.tableHex.requestFocusInWindow()
 	}
 	
-	void setupEditMode()
+	void setupEditMode(def count)
 	{
 		removeOldBindings()
+		if (count > 0)
+			insertHex(count)
 		//add ESCAPE (vi mode) binding
 		windowEdit.tableHex.getInputMap().put(
 			KeyStroke.getKeyStroke("ESCAPE"), "RETURN_VI_MODE")
@@ -366,6 +368,13 @@ class HexxedStatus {
 		return commandSuccess
 	}
 	
+	def insertHex(def count)
+	{
+		def commandInsert = new HexxedInsertCommand(count, this)
+		undoList << commandInsert
+		commandInsert.execute()
+	}
+	
 	def deleteHex(def count)
 	{
 		def commandDelete = new HexxedDeleteCommand(count, this)
@@ -388,6 +397,13 @@ class HexxedStatus {
 		commandObj.be = oldBE
 	}
 	
+	void resetTableToMatchWidth(def commandObj)
+	{
+		def oldBitWidth = bitWidth
+		setBitWidth(commandObj.bitWidth)
+		commandObj.bitWidth = oldBitWidth
+	}
+	
 	def createTempFile()
 	{
 		if (usingTempFile == false) {
@@ -404,6 +420,54 @@ class HexxedStatus {
 				"Temporary file written to $tempFile\n")
 			usingTempFile = true
 		}
+	}
+	
+	void executeInsert(def commandObj)
+	{
+		def reverseRequired = false
+		def tableModel = windowEdit.tableHex.getModel()
+		def charTableModel = windowEdit.tableChar.getModel()
+		if (commandObj.bitWidth != bitWidth) {
+			resetTableToMatchWidth(commandObj)
+			tableModel.fireTableChanged(new TableModelEvent(tableModel))
+			charTableModel.fireTableChanged(
+				new TableModelEvent(charTableModel))
+			reverseRequired = true
+		}
+		
+		def oldSize = fileChan.size()
+		def count = commandObj.count * (bitWidth / 8) as Integer
+		createTempFile()
+		
+		if (commandObj.done) {
+			//undo - make an unrecorded delete command and execute it
+			def oldOffset = offset
+			offset = commandObj.insertPosition()
+			def deleteInsert = new HexxedDeleteCommand(commandObj.count, this)
+			deleteInsert.execute()
+			offset = oldOffset
+			commandObj.done = false
+			redoList << commandObj
+		} else {
+			def insertBuf = ByteBuffer.allocate(count)
+			if (commandObj.insertPosition >= oldSize)
+				commandObj.insertPosition = oldSize - 1
+			def appendBuf =
+				ByteBuffer.allocate(
+					(oldSize - (1 + commandObj.insertPosition)) as Integer)
+			fileChan.read(appendBuf, commandObj.insertPosition)
+			fileChan.write(insertBuf, commandObj.insertPosition)
+			appendBuf.position(0)
+			fileChan.write(appendBuf, commandObj.insertPosition + count)
+			commandObj.done = true
+			undoList << commandObj
+		}
+		
+		if (reverseRequired)
+			resetTableToMatchWidth(commandObj)
+		tableModel.fireTableChanged(new TableModelEvent(tableModel))
+		charTableModel.fireTableChanged(new TableModelEvent(charTableModel))
+			
 	}
 	
 	void executeDelete(def commandObj)
@@ -575,7 +639,6 @@ class HexxedStatus {
 				"Repeat failed on attempt $z, with exception $e\n")
 		}
 	}
-	
 	
 	void rewindEdits()
 	{

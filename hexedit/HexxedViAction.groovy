@@ -188,8 +188,11 @@ class HexxedViAction extends AbstractAction {
 				updateCount(0)
 				break
 			case HexxedConstants.EDIT:
+				def x = 0
+				if (counting)
+					x = count
+				statusHolder.setupEditMode(x)
 				resetCount()
-				statusHolder.setupEditMode()
 				break
 			case HexxedConstants.RETURN_VI_MODE:
 				resetCount()
