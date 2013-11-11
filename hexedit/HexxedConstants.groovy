@@ -7,7 +7,7 @@ class HexxedConstants {
 	static def EDIT = 3
 	static def RETURN_VI_MODE = 4
 	
-	static def ROWMAX = 40
+	static long ROWMAX = 40
 	
 	static def UP_LINE = 1000
 	static def DOWN_LINE = 1001

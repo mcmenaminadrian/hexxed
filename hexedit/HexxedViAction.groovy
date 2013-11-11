@@ -10,7 +10,7 @@ class HexxedViAction extends AbstractAction {
 	def windowHexxed
 	def statusHolder
 	def typeAction
-	def static count = 0
+	def static count = 0L
 	def static counting = false
 	
 
@@ -23,7 +23,7 @@ class HexxedViAction extends AbstractAction {
 	
 	void resetCount()
 	{
-		count = 0
+		count = 0L
 		counting = false
 		windowHexxed.commandTextLine.setText(null)
 	}
@@ -60,7 +60,7 @@ class HexxedViAction extends AbstractAction {
 				resetCount()
 				break
 			case HexxedConstants.UNDO:
-				def x = 1
+				def x = 1L
 				if (counting)
 					x = count
 				for (i in 1..x) {
@@ -73,7 +73,7 @@ class HexxedViAction extends AbstractAction {
 				resetCount()
 				break
 			case HexxedConstants.REDO:
-				def x = 1
+				def x = 1L
 				if (counting)
 					x = count
 				for (i in 1..x) {
@@ -88,7 +88,7 @@ class HexxedViAction extends AbstractAction {
 			case HexxedConstants.REPEAT:
 				if (statusHolder.undoList.size() == 0)
 					return
-				def x = 1
+				def x = 1L
 				if (counting)
 					x = count
 				statusHolder.repeatLast(x)
@@ -107,7 +107,7 @@ class HexxedViAction extends AbstractAction {
 			case HexxedConstants.UP_LINE:
 			case HexxedConstants.LEFT:
 			case HexxedConstants.RIGHT:
-				def x = 1
+				def x = 1L
 				if (counting)
 					x = count
 				if (typeAction == HexxedConstants.DOWN_LINE)
@@ -123,7 +123,7 @@ class HexxedViAction extends AbstractAction {
 			case HexxedConstants.BACK_BLOCK:
 			case HexxedConstants.NEXT_BLOCK:
 				if (statusHolder.useBlocks) {
-					def noblocks = 1
+					def noblocks = 1L
 					def position = statusHolder.offset
 					if (counting)
 						noblocks = count
@@ -138,7 +138,7 @@ class HexxedViAction extends AbstractAction {
 				break
 			case HexxedConstants.BACK_SCREEN:
 			case HexxedConstants.NEXT_SCREEN:
-				def noscreens = 1
+				def noscreens = 1L
 				def position = statusHolder.offset
 				if (counting)
 					noscreens = count
@@ -188,7 +188,7 @@ class HexxedViAction extends AbstractAction {
 				updateCount(0)
 				break
 			case HexxedConstants.EDIT:
-				def x = 0
+				def x = 0L
 				if (counting)
 					x = count
 				statusHolder.setupEditMode(x)
