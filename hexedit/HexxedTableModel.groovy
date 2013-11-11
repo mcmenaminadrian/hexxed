@@ -33,7 +33,7 @@ class HexxedTableModel extends AbstractTableModel {
 			if (max >= hexxedStatus.offset + HexxedConstants.ROWMAX * 16)
 				return HexxedConstants.ROWMAX
 			else 
-				return Math.ceil(((max - hexxedStatus.offset)/16)) as Integer
+				return Math.ceil(((max - hexxedStatus.offset)/16)) as Long
 			}	
 	}
 	

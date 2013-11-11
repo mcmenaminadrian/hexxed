@@ -131,7 +131,7 @@ class HexxedViAction extends AbstractAction {
 						position -= statusHolder.blockSize * noblocks
 					else
 						position += statusHolder.blockSize * noblocks
-					def multi = (position / statusHolder.blockSize) as Integer
+					def multi = (position / statusHolder.blockSize) as Long
 					statusHolder.setOffset(multi * statusHolder.blockSize)
 				}
 				resetCount()
@@ -151,7 +151,7 @@ class HexxedViAction extends AbstractAction {
 				break
 			case HexxedConstants.HALFSCREEN_UP:
 			case HexxedConstants.HALFSCREEN_DOWN:
-				def add = HexxedConstants.ROWMAX / 2 as Integer
+				def add = HexxedConstants.ROWMAX / 2 as Long
 				if (typeAction == HexxedConstants.HALFSCREEN_UP)
 					add = add * -1
 				statusHolder.offset += add * 16

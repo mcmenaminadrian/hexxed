@@ -436,7 +436,7 @@ class HexxedStatus {
 		}
 		
 		def oldSize = fileChan.size()
-		def count = commandObj.count * (bitWidth / 8) as Integer
+		def count = commandObj.count * (bitWidth / 8) as Long
 		createTempFile()
 		
 		if (commandObj.done) {
@@ -461,7 +461,7 @@ class HexxedStatus {
 				commandObj.insertPosition = oldSize - 1
 			def appendBuf =
 				ByteBuffer.allocate(
-					(oldSize - commandObj.insertPosition) as Integer)
+					(oldSize - commandObj.insertPosition) as Long)
 			fileChan.read(appendBuf, commandObj.insertPosition)
 			fileChan.write(insertBuf, commandObj.insertPosition)
 			appendBuf.position(0)
@@ -489,7 +489,7 @@ class HexxedStatus {
 			reverseRequired = true
 		}
 		
-		def count = commandObj.count * (bitWidth / 8) as Integer
+		def count = commandObj.count * (bitWidth / 8) as Long
 		def oldOffset = offset
 		offset = commandObj.position
 		tableModel.fireTableChanged(new TableModelEvent(tableModel))
@@ -500,42 +500,42 @@ class HexxedStatus {
 		if (commandObj.oldValues.size() > 0)
 		{	//undo
 			def buf = ByteBuffer.allocate((oldSize - commandObj.position)
-				 as Integer)
-			fileChan.read(buf, commandObj.position as Integer)
+				 as Long)
+			fileChan.read(buf, commandObj.position as Long)
 			commandObj.oldValues.eachWithIndex(){v, i->
-				def row = i / (16 / (bitWidth / 8) as Integer) as Integer
-				def col = i % (16 / (bitWidth / 8) as Integer) as Integer
+				def row = i / (16 / (bitWidth / 8) as Long) as Long
+				def col = i % (16 / (bitWidth / 8) as Long) as Long
 				col++ //not try to over-write address
 				def valueCommand = new HexxedSetValueCommand(row, col, v, this)
 				executeSetValue(valueCommand)
 			}
 			buf.position(0)
-			fileChan.write(buf, (commandObj.position + count) as Integer)
+			fileChan.write(buf, (commandObj.position + count) as Long)
 			commandObj.oldValues.clear() // so we look like a redo now
 		} else {
 			//delete
 			def buf
 			if (commandObj.position + count > fileChan.size()) {
-				count = (fileChan.size() - commandObj.position) as Integer
-				commandObj.count = (count / (bitWidth / 8)) as Integer
+				count = (fileChan.size() - commandObj.position) as Long
+				commandObj.count = (count / (bitWidth / 8)) as Long
 			}
 			if (count > 0) {
 				def allocSize = oldSize - (commandObj.position + count)
 				if (allocSize > 0) {
-					buf = ByteBuffer.allocate(allocSize as Integer)
+					buf = ByteBuffer.allocate(allocSize as Long)
 					fileChan.read(buf, (commandObj.position + count)
-						as Integer)
+						as Long)
 				}
 				for (i in 0..commandObj.count - 1) {		
-					def row = i / ((16 / (bitWidth / 8)) as Integer) as Integer
-					def col = i % ((16 / (bitWidth / 8)) as Integer) as Integer
+					def row = i / ((16 / (bitWidth / 8)) as Long) as Long
+					def col = i % ((16 / (bitWidth / 8)) as Long) as Long
 					col++ //col 0 is address
 					commandObj.oldValues << valueAt(row, col)
 				}
 				if (allocSize > 0) {
 					buf.position(0)
-					fileChan.write(buf, commandObj.position as Integer)
-					fileChan.truncate(oldSize - count as Integer)
+					fileChan.write(buf, commandObj.position as Long)
+					fileChan.truncate(oldSize - count as Long)
 				} else
 					fileChan.truncate(0)
 			}
@@ -596,7 +596,7 @@ class HexxedStatus {
 		}
 		createTempFile()
 		
-		def bytes = ByteBuffer.allocate((nibbles / 2) as Integer)
+		def bytes = ByteBuffer.allocate((nibbles / 2) as Long)
 		def j = 0
 		def listVal = value.toList()
 		if (littleEndian) {
@@ -616,7 +616,7 @@ class HexxedStatus {
 				bytes.put(j++, be)
 			}
 		}
-		def address = offset + row * 16 + (col - 1) * (bitWidth / 8) as Integer
+		def address = offset + row * 16 + (col - 1) * (bitWidth / 8) as Long
 		fileChan.write(bytes, address)
 		if (reverseRequired)
 			resetTableToMatchCommand(commandObj)
@@ -664,7 +664,7 @@ class HexxedStatus {
 		if (col == 0) {
 			//return address
 			if (useBlocks) {
-				def decBlock = (position / blockSize) as Integer
+				def decBlock = (position / blockSize) as Long
 				def blockCnt = String.format("%08X", decBlock)
 				def offCnt = String.format("%04X", position % blockSize)
 				return "$blockCnt:$offCnt"
@@ -689,7 +689,7 @@ class HexxedStatus {
 		}
 		
 		def bytes = ByteBuffer.allocate(byteCount)
-		def bytesRet = fileChan.read(bytes, position as Integer)
+		def bytesRet = fileChan.read(bytes, position as Long)
 		if (bytesRet == 0)
 			throw new IOException("EOF")
 		
@@ -764,7 +764,7 @@ class HexxedStatus {
 		}
 		
 		def bytes = ByteBuffer.allocate(16)
-		def bytesRet = fileChan.read(bytes, position as Integer)
+		def bytesRet = fileChan.read(bytes, position as Long)
 		if (bytesRet == 0)
 			return
 		
@@ -799,7 +799,7 @@ class HexxedStatus {
 		if (selectedCol < 1)
 			selectedCol = 1
 		if (selectedCol + spaces > 16 / (bitWidth / 8))
-			selectedCol = (16 / (bitWidth / 8)) as Integer
+			selectedCol = (16 / (bitWidth / 8)) as Long
 		else
 			selectedCol += spaces		
 		windowEdit.tableHex.changeSelection(
@@ -837,7 +837,7 @@ class HexxedStatus {
 	void setOffset(def off)
 	{
 		if (fileChan && off >= fileChan.size())
-			off = ((fileChan.size() - 1) & 0xFFFFFFFFFFFFFFF0) as Integer
+			off = ((fileChan.size() - 1) & 0xFFFFFFFFFFFFFFF0) as Long
 		if (off < 0)
 			off = 0
 		offset = off

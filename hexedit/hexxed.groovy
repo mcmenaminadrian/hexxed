@@ -67,9 +67,9 @@ def hexCli = new CliBuilder
 		def bits = 8
 		def le = false
 		def be = false
-		def bs = 512
+		def bs = 512L
 		def blocks = false
-		def offset = 0
+		def offset = 0L
 		def fileToEdit
 		def xw = 640
 		def yh = 480
@@ -85,7 +85,7 @@ def hexCli = new CliBuilder
 		if (hexParse.b) {
 			blocks = true
 			if (hexParse.s)
-				bs = Integer.parseInt(hexParse.s)
+				bs = Long.parseLong(hexParse.s)
 		}
 		
 		if (hexParse.w){
@@ -107,7 +107,7 @@ def hexCli = new CliBuilder
 		}
 		
 		if (hexParse.o)
-			offset = Integer.parseInt(hexParse.o)
+			offset = Long.parseLong(hexParse.o)
 
 		if (hexParse.x)
 			xw = Integer.parseInt(hexParse.x)

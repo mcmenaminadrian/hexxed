@@ -23,7 +23,7 @@ class HexxedDeleteCommand implements Command {
 			return
 		def selectedRow = statusHolder.windowEdit.tableHex.getSelectedRow()
 		position += 
-			(selectedRow * 16 + (--selectedCol) * (bitWidth / 8)) as Integer
+			(selectedRow * 16 + (--selectedCol) * (bitWidth / 8)) as Long
 	}
 	
 	def clone()

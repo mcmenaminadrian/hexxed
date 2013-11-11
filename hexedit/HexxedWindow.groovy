@@ -234,7 +234,7 @@ class HexxedWindow {
 			"", "Set Block Size", JOptionPane.INFORMATION_MESSAGE,
 			null, null, statusHolder.blockSize)
 
-		def numb = retVal as Integer
+		def numb = retVal as Long
 		if (numb <= 16) {
 			statusHolder.setUseBlocks(false)
 			statusHolder.setBlockSize(0)
@@ -299,7 +299,7 @@ class HexxedWindow {
 	{
 		def position = statusHolder.offset
 		position += statusHolder.blockSize
-		def multi = (position / statusHolder.blockSize) as Integer
+		def multi = (position / statusHolder.blockSize) as Long
 		statusHolder.setOffset(multi * statusHolder.blockSize) 	
 	}
 	
@@ -309,7 +309,7 @@ class HexxedWindow {
 		position -= statusHolder.blockSize
 		if (position < 0)
 			position = 0
-		def multi = (position / statusHolder.blockSize) as Integer
+		def multi = (position / statusHolder.blockSize) as Long
 		statusHolder.setOffset(multi * statusHolder.blockSize)
 	}
 	
@@ -319,8 +319,8 @@ class HexxedWindow {
 	def displayGPL()
 	{
 		def name = "Hexxed"
-		def version = "0.1"
-		def copyright = "copyright (c) Adrian McMenamin, 2012"
+		def version = "0.2"
+		def copyright = "copyright (c) Adrian McMenamin, 2012, 2013"
 		def message =
 		name +  " v" + version + "\n" + "\n" + copyright +
 		"\n\nThis program is free software, You can redistribute" +

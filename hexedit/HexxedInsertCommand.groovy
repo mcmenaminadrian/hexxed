@@ -18,7 +18,7 @@ class HexxedInsertCommand implements Command {
 		if (colPosition > 0) {
 			def rowPosition = statusHolder.windowEdit.tableHex.getSelectedRow()
 			insertPosition += 
-				(--colPosition * (bitWidth / 8)) + rowPosition * 16 as Integer
+				(--colPosition * (bitWidth / 8)) + rowPosition * 16 as Long
 		}
 		done = false // inserting
 		
